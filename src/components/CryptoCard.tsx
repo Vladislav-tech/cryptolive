@@ -1,10 +1,13 @@
 import { TrendingUp, TrendingDown, Activity } from 'lucide-react';
+import type { CryptoData } from '@/hooks/useCryptoWebSocket';
 
+interface CryptoCardProps {
+  crypto: CryptoData;
+}
 
-
-export const CryptoCard = () => {
-  const isPositive = 1;
-  const symbolName = 'BTC';
+export const CryptoCard = ({ crypto }: CryptoCardProps) => {
+  const isPositive = parseFloat(crypto.priceChangePercent) >= 0;
+  const symbolName = crypto.symbol.replace('USDT', '');
 
   return (
     <div
@@ -19,7 +22,6 @@ export const CryptoCard = () => {
         ${isPositive ? 'hover:shadow-glow-emerald' : 'hover:shadow-glow-rose'}
       `}
     >
-      {/* Очень лёгкий градиент-оверлей для глубины */}
       <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none" />
 
       <div className="relative p-6">
@@ -56,35 +58,35 @@ export const CryptoCard = () => {
             `}
           >
             {isPositive ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
-            <span>1%</span>
+            <span>{crypto.priceChangePercent}%</span>
           </div>
         </div>
 
         <div className="space-y-4">
           <div>
             <p className="text-4xl font-extrabold text-white tracking-tight">
-              100
+              ${crypto.price}
             </p>
             <p className={`
               text-base font-medium mt-1.5 tracking-wide
               ${isPositive ? 'text-emerald-400' : 'text-rose-400'}
             `}>
-              + USD
+              {isPositive ? '+' : ''}{crypto.priceChange} USD
             </p>
           </div>
 
           <div className="grid grid-cols-3 gap-4 pt-5 border-t border-white/5">
             <div>
               <p className="text-xs text-slate-400 mb-1.5">High</p>
-              <p className="text-base font-semibold text-slate-200">$2</p>
+              <p className="text-base font-semibold text-slate-200">${crypto.high}</p>
             </div>
             <div>
               <p className="text-xs text-slate-400 mb-1.5">Low</p>
-              <p className="text-base font-semibold text-slate-200">3</p>
+              <p className="text-base font-semibold text-slate-200">${crypto.low}</p>
             </div>
             <div>
               <p className="text-xs text-slate-400 mb-1.5">Vol (K)</p>
-              <p className="text-base font-semibold text-slate-200">4</p>
+              <p className="text-base font-semibold text-slate-200">{crypto.volume}</p>
             </div>
           </div>
         </div>

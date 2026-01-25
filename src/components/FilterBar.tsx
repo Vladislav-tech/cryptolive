@@ -1,16 +1,19 @@
 import { Filter, ArrowUpDown } from 'lucide-react';
+import { MoveUp, MoveDown } from 'lucide-react';
 
 export type SortOption = 'name' | 'price' | 'change' | 'volume';
+export type SortType = 'asc' | 'desc';
 export type FilterOption = 'all' | 'gainers' | 'losers';
 
 interface FilterBarProps {
   sortBy: SortOption;
   onSortChange: (sort: SortOption) => void;
+  onSortType: (sortType: SortType) => void;
   filterBy: FilterOption;
   onFilterChange: (filter: FilterOption) => void;
 }
 
-export const FilterBar = ({ sortBy, onSortChange, filterBy, onFilterChange }: FilterBarProps) => {
+export const FilterBar = ({ sortBy, onSortChange, onSortType, filterBy, onFilterChange }: FilterBarProps) => {
   return (
     <div className="flex flex-col sm:flex-row gap-4">
       <div className="flex items-center gap-2 flex-1">
@@ -27,7 +30,11 @@ export const FilterBar = ({ sortBy, onSortChange, filterBy, onFilterChange }: Fi
       </div>
 
       <div className="flex items-center gap-2 flex-1">
-        <ArrowUpDown className="text-gray-600 w-5 h-5" />
+        <div className="flex">
+          <MoveUp className="text-gray-600 w-5 h-5 cursor-pointer" onClick={() => onSortType('asc')}/>
+          <MoveDown className="text-gray-600 w-5 h-5 cursor-pointer" onClick={() => onSortType('desc')}/>
+        </div>
+
         <select
           value={sortBy}
           onChange={(e) => onSortChange(e.target.value as SortOption)}
