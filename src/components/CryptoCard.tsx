@@ -1,24 +1,48 @@
 import { TrendingUp, TrendingDown, Activity } from 'lucide-react';
 import type { CryptoData } from '@/hooks/useCryptoWebSocket';
+import { Heart } from 'lucide-react';
+import { useAddFav } from '@/hooks/useAddFav';
+import { useGetFav } from '@/hooks/useGetFav';
+import { useRemoveFav } from '@/hooks/useRemoveFav';
+import { memo, useEffect, useState } from 'react';
 
 interface CryptoCardProps {
   crypto: CryptoData;
 }
 
-export const CryptoCard = ({ crypto }: CryptoCardProps) => {
+export const CryptoCard = memo(({ crypto }: CryptoCardProps) => {
   const isPositive = parseFloat(crypto.priceChangePercent) >= 0;
   const symbolName = crypto.symbol.replace('USDT', '');
+  const favorites = useGetFav();
+
+
+  const [fav, setFav] = useState<boolean | undefined>(favorites?.includes(crypto.symbol.toLowerCase()));
+  
+  const handleClick = () => {
+    if (fav) {
+      useRemoveFav(crypto.symbol);
+      setFav(false);
+    } else {
+      useAddFav(crypto.symbol);
+      setFav(true);
+    }
+  }
+
+  useEffect(() => {
+    return () => {
+      console.log('unmount')
+    };
+  }, [fav]);
 
   return (
     <div
       className={`
         group relative
         bg-glass-bg backdrop-blur-md
-        border border-glass-border
         rounded-2xl overflow-hidden
         shadow-2xl shadow-black/40
         transition-all duration-300 ease-out
-        hover:-translate-y-2 hover:shadow-xl
+        hover:-border-1px hover:shadow-xl
         ${isPositive ? 'hover:shadow-glow-emerald' : 'hover:shadow-glow-rose'}
       `}
     >
@@ -31,8 +55,8 @@ export const CryptoCard = ({ crypto }: CryptoCardProps) => {
               className={`
                 w-14 h-14 rounded-2xl flex items-center justify-center
                 backdrop-blur-sm transition-colors
-                ${isPositive 
-                  ? 'bg-emerald-500/10 border-emerald-400/20' 
+                ${isPositive
+                  ? 'bg-emerald-500/10 border-emerald-400/20'
                   : 'bg-rose-500/10 border-rose-400/20'}
                 border
               `}
@@ -51,8 +75,8 @@ export const CryptoCard = ({ crypto }: CryptoCardProps) => {
             className={`
               flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-semibold
               backdrop-blur-sm
-              ${isPositive 
-                ? 'bg-emerald-500/15 text-emerald-300 border-emerald-400/20' 
+              ${isPositive
+                ? 'bg-emerald-500/15 text-emerald-300 border-emerald-400/20'
                 : 'bg-rose-500/15 text-rose-300 border-rose-400/20'}
               border transition-all group-hover:scale-105
             `}
@@ -64,18 +88,31 @@ export const CryptoCard = ({ crypto }: CryptoCardProps) => {
 
         <div className="space-y-4">
           <div>
-            <p className="text-4xl font-extrabold text-white tracking-tight">
+            <p className="flex justify-between items-center text-3xl font-extrabold text-white tracking-tight">
               ${crypto.price}
+              <Heart onClick={handleClick} className={`
+                w-7 h-7 
+                text-rose-400 
+                cursor-pointer 
+                ${!fav ? '' : 'fill-rose-400 '}
+                hover:fill-rose-500 
+                hover:text-rose-500 
+                transition-all 
+                duration-500 ease-out` }/>
             </p>
+
             <p className={`
               text-base font-medium mt-1.5 tracking-wide
               ${isPositive ? 'text-emerald-400' : 'text-rose-400'}
             `}>
               {isPositive ? '+' : ''}{crypto.priceChange} USD
+
             </p>
+
           </div>
 
           <div className="grid grid-cols-3 gap-4 pt-5 border-t border-white/5">
+
             <div>
               <p className="text-xs text-slate-400 mb-1.5">High</p>
               <p className="text-base font-semibold text-slate-200">${crypto.high}</p>
@@ -93,4 +130,4 @@ export const CryptoCard = ({ crypto }: CryptoCardProps) => {
       </div>
     </div>
   );
-};
+});

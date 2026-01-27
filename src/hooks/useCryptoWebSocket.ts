@@ -13,18 +13,21 @@ export interface CryptoData {
 
 type CryptoHashTable = Map<string, CryptoData>;
 
-export const useCryptoWebSocket = () => {
+const defaultSymbols = [
+    'btcusdt', 'ethusdt', 'bnbusdt', 'xrpusdt', 'adausdt',
+    'dogeusdt', 'solusdt', 'dotusdt', 'maticusdt', 'shibusdt',
+    'ltcusdt', 'trxusdt', 'avaxusdt', 'linkusdt', 'uniusdt',
+    'atomusdt', 'etcusdt', 'xlmusdt', 'nearusdt', 'algousdt'
+];
+
+
+export const useCryptoWebSocket = (symbols: string[] = defaultSymbols) => {
     const [cryptoData, setCryptoData] = useState<CryptoHashTable>(new Map());
     const [isConnected, setIsConnected] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        const symbols = [
-            'btcusdt', 'ethusdt', 'bnbusdt', 'xrpusdt', 'adausdt',
-            'dogeusdt', 'solusdt', 'dotusdt', 'maticusdt', 'shibusdt',
-            'ltcusdt', 'trxusdt', 'avaxusdt', 'linkusdt', 'uniusdt',
-            'atomusdt', 'etcusdt', 'xlmusdt', 'nearusdt', 'algousdt'
-        ];
+
 
         const streams = symbols.map(symbol => `${symbol}@ticker`).join('/');
         const ws = new WebSocket(`wss://stream.binance.com:9443/stream?streams=${streams}`);
@@ -32,6 +35,8 @@ export const useCryptoWebSocket = () => {
         ws.onopen = () => {
             setIsConnected(true);
             setError(null);
+            console.log('open');
+            console.log(symbols);
         }
 
         ws.onmessage = (event) => {
@@ -69,6 +74,7 @@ export const useCryptoWebSocket = () => {
 
         ws.onclose = () => {
             setIsConnected(false);
+            console.log('closed')
         };
 
         return () => {

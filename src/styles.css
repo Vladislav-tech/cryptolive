@@ -40,3 +40,12 @@
     font-family: var(--font-sans);
   }
 }
+
+@keyframes gentle-pulse {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 0.4; }
+}
+
+.connecting .blur-sm {
+  animation: gentle-pulse 2s ease-in-out infinite;
+}

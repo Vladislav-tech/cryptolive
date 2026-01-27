@@ -29,8 +29,6 @@ const rootElement = document.getElementById('app')
 if (rootElement && !rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement)
   root.render(
-    <StrictMode>
       <RouterProvider router={router} />
-    </StrictMode>,
   )
 }
