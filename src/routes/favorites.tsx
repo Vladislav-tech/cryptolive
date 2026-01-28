@@ -1,6 +1,5 @@
 import { ConnectionStatus } from '@/components/ConnectionStatus';
 import { CryptoCard } from '@/components/CryptoCard';
-import { useAddFav } from '@/hooks/useAddFav'
 import { useCryptoWebSocket } from '@/hooks/useCryptoWebSocket';
 import { useGetFav } from '@/hooks/useGetFav';
 import { createFileRoute } from '@tanstack/react-router'

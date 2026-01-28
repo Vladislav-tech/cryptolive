@@ -1,10 +1,10 @@
-import { TrendingUp, TrendingDown, Activity } from 'lucide-react';
+// src/components/CryptoCard.tsx
+import { TrendingUp, TrendingDown, Heart } from 'lucide-react';
 import type { CryptoData } from '@/hooks/useCryptoWebSocket';
-import { Heart } from 'lucide-react';
-import { useAddFav } from '@/hooks/useAddFav';
+import { memo, useState } from 'react';
 import { useGetFav } from '@/hooks/useGetFav';
+import { useAddFav } from '@/hooks/useAddFav';
 import { useRemoveFav } from '@/hooks/useRemoveFav';
-import { memo, useEffect, useState } from 'react';
 
 interface CryptoCardProps {
   crypto: CryptoData;
@@ -13,118 +13,109 @@ interface CryptoCardProps {
 export const CryptoCard = memo(({ crypto }: CryptoCardProps) => {
   const isPositive = parseFloat(crypto.priceChangePercent) >= 0;
   const symbolName = crypto.symbol.replace('USDT', '');
+
   const favorites = useGetFav();
+  const [isFav, setIsFav] = useState<boolean>(
+    favorites?.includes(crypto.symbol.toLowerCase()) ?? false
+  );
 
-
-  const [fav, setFav] = useState<boolean | undefined>(favorites?.includes(crypto.symbol.toLowerCase()));
-  
-  const handleClick = () => {
-    if (fav) {
+  const handleToggleFav = () => {
+    if (isFav) {
       useRemoveFav(crypto.symbol);
-      setFav(false);
+      setIsFav(false);
     } else {
       useAddFav(crypto.symbol);
-      setFav(true);
+      setIsFav(true);
     }
-  }
+  };
 
-  useEffect(() => {
-    return () => {
-      console.log('unmount')
-    };
-  }, [fav]);
+
+  const trendColor = isPositive ? 'emerald' : 'rose';
+  const borderClass = `border-l-4 border-l-${trendColor}-600/80`;
+  const textChangeClass = `text-${trendColor}-400`;
+  const iconColor = `text-${trendColor}-500`;
+
+
+  const gradientClass = isPositive
+    ? 'bg-gradient-to-r from-emerald-950/10 via-emerald-950/3 to-transparent'
+    : 'bg-gradient-to-r from-rose-950/10 via-rose-950/3 to-transparent';
 
   return (
     <div
       className={`
-        group relative
-        bg-glass-bg backdrop-blur-md
-        rounded-2xl overflow-hidden
-        shadow-2xl shadow-black/40
-        transition-all duration-300 ease-out
-        hover:-border-1px hover:shadow-xl
-        ${isPositive ? 'hover:shadow-glow-emerald' : 'hover:shadow-glow-rose'}
+        relative
+        bg-slate-800/50 backdrop-blur-sm
+        border border-slate-700/60 rounded-xl
+        overflow-hidden
+        shadow-sm
+        transition-colors duration-200
+        hover:bg-slate-700/60 hover:border-slate-600/80
+        ${borderClass}
+        ${gradientClass}
       `}
     >
-      <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none" />
+      <div className="p-5 flex flex-col h-full relative z-10">
 
-      <div className="relative p-6">
-        <div className="flex items-start justify-between mb-5">
-          <div className="flex items-center gap-4">
-            <div
-              className={`
-                w-14 h-14 rounded-2xl flex items-center justify-center
-                backdrop-blur-sm transition-colors
-                ${isPositive
-                  ? 'bg-emerald-500/10 border-emerald-400/20'
-                  : 'bg-rose-500/10 border-rose-400/20'}
-                border
-              `}
-            >
-              <Activity className={`w-7 h-7 ${isPositive ? 'text-emerald-400' : 'text-rose-400'}`} />
-            </div>
-            <div>
-              <h3 className="text-xl font-bold text-white tracking-tight group-hover:text-slate-50 transition-colors">
-                {symbolName}
-              </h3>
-              <p className="text-sm text-slate-400">USDT</p>
-            </div>
+        <div className="flex items-start justify-between mb-4">
+          <div>
+            <h3 className="text-2xl font-bold text-white tracking-tight">
+              {symbolName}
+            </h3>
+            <p className="text-sm text-slate-400 mt-0.5 font-medium">
+              {crypto.symbol}
+            </p>
           </div>
 
-          <div
-            className={`
-              flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-semibold
-              backdrop-blur-sm
-              ${isPositive
-                ? 'bg-emerald-500/15 text-emerald-300 border-emerald-400/20'
-                : 'bg-rose-500/15 text-rose-300 border-rose-400/20'}
-              border transition-all group-hover:scale-105
-            `}
+          <button
+            type="button"
+            onClick={handleToggleFav}
+            className="p-2 -m-2 rounded-full hover:bg-slate-600/40 transition-colors"
+            aria-label={isFav ? 'Remove from favorites' : 'Add to favorites'}
           >
-            {isPositive ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
-            <span>{crypto.priceChangePercent}%</span>
+            <Heart
+              className={`
+                w-6 h-6 transition-colors duration-200
+                ${isFav 
+                  ? `fill-rose-500 text-rose-500` 
+                  : `text-slate-400 hover:text-rose-400`}
+              `}
+            />
+          </button>
+        </div>
+
+
+        <div className="mb-5">
+          <p className="text-4xl font-black text-white tabular-nums leading-none">
+            ${crypto.price}
+          </p>
+
+          <div className={`mt-3 flex items-center gap-2.5 text-lg font-medium ${textChangeClass}`}>
+            {isPositive ? (
+              <TrendingUp className={`w-5 h-5 ${iconColor}`} />
+            ) : (
+              <TrendingDown className={`w-5 h-5 ${iconColor}`} />
+            )}
+            <span>{crypto.priceChange} USD</span>
+            <span className="text-slate-500 mx-1">•</span>
+            <span className="font-semibold">
+              {isPositive ? '+' : ''}{crypto.priceChangePercent}%
+            </span>
           </div>
         </div>
 
-        <div className="space-y-4">
+
+        <div className="grid grid-cols-3 gap-4 mt-auto pt-4 border-t border-slate-700/50 text-sm">
           <div>
-            <p className="flex justify-between items-center text-3xl font-extrabold text-white tracking-tight">
-              ${crypto.price}
-              <Heart onClick={handleClick} className={`
-                w-7 h-7 
-                text-rose-400 
-                cursor-pointer 
-                ${!fav ? '' : 'fill-rose-400 '}
-                hover:fill-rose-500 
-                hover:text-rose-500 
-                transition-all 
-                duration-500 ease-out` }/>
-            </p>
-
-            <p className={`
-              text-base font-medium mt-1.5 tracking-wide
-              ${isPositive ? 'text-emerald-400' : 'text-rose-400'}
-            `}>
-              {isPositive ? '+' : ''}{crypto.priceChange} USD
-
-            </p>
-
+            <p className="text-slate-500 text-xs font-medium">High</p>
+            <p className="font-semibold text-slate-200 mt-0.5">${crypto.high}</p>
           </div>
-
-          <div className="grid grid-cols-3 gap-4 pt-5 border-t border-white/5">
-
-            <div>
-              <p className="text-xs text-slate-400 mb-1.5">High</p>
-              <p className="text-base font-semibold text-slate-200">${crypto.high}</p>
-            </div>
-            <div>
-              <p className="text-xs text-slate-400 mb-1.5">Low</p>
-              <p className="text-base font-semibold text-slate-200">${crypto.low}</p>
-            </div>
-            <div>
-              <p className="text-xs text-slate-400 mb-1.5">Vol (K)</p>
-              <p className="text-base font-semibold text-slate-200">{crypto.volume}</p>
-            </div>
+          <div>
+            <p className="text-slate-500 text-xs font-medium">Low</p>
+            <p className="font-semibold text-slate-200 mt-0.5">${crypto.low}</p>
+          </div>
+          <div>
+            <p className="text-slate-500 text-xs font-medium">Vol (24h)</p>
+            <p className="font-semibold text-slate-200 mt-0.5">{crypto.volume}K</p>
           </div>
         </div>
       </div>

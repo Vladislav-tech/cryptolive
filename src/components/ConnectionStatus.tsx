@@ -1,4 +1,4 @@
-import { Wifi, WifiOff, AlertCircle, RadioTower } from 'lucide-react';
+import { WifiOff, AlertCircle, RadioTower } from 'lucide-react';
 
 interface ConnectionStatusProps {
   isConnected: boolean;
@@ -6,61 +6,83 @@ interface ConnectionStatusProps {
 }
 
 export const ConnectionStatus = ({ isConnected, error }: ConnectionStatusProps) => {
+
+  let status: 'success' | 'warning' | 'error' = 'warning';
+  let icon = <WifiOff  className="w-5 h-5" />;
+  let bgClass = 'bg-slate-800/50';
+  let borderClass = 'border-l-4 border-l-amber-600/80';
+  let textColor = 'text-amber-400';
+  let label = 'Connecting...';
+  let desc = 'Establishing WebSocket connection';
+
   if (error) {
-    return (
-      <div className="bg-gradient-to-br from-rose-50 to-rose-100 border border-rose-200 rounded-xl p-4 flex items-center gap-3 shadow-lg shadow-rose-100/50">
-        <div className="relative">
-          <div className="absolute inset-0 bg-rose-400 rounded-full opacity-20 blur-sm"></div>
-          <AlertCircle className="relative w-6 h-6 text-rose-600" />
-        </div>
-        <div>
-          <p className="text-sm font-semibold text-rose-900">Connection Error</p>
-          <p className="text-xs text-rose-700 mt-0.5">{error}</p>
-        </div>
-      </div>
-    );
+    status = 'error';
+    icon = <AlertCircle className="w-5 h-5" />;
+    bgClass = 'bg-slate-800/50';
+    borderClass = 'border-l-4 border-l-rose-600/80';
+    textColor = 'text-rose-400';
+    label = 'Connection Error';
+    desc = error;
+  } else if (isConnected) {
+    status = 'success';
+    icon = <RadioTower className="w-5 h-5" color="green"/>;
+    borderClass = 'border-l-4 border-l-emerald-600/80';
+    textColor = 'text-emerald-400';
+    label = 'Live Updates Active';
+    desc = 'Real-time data from Binance';
   }
 
   return (
-    <div className={`bg-gradient-to-br ${
-      isConnected 
-        ? 'from-emerald-50 to-teal-100 border-emerald-200 shadow-lg shadow-emerald-100/50' 
-        : 'from-amber-50 to-orange-100 border-amber-200 shadow-lg shadow-amber-100/50'
-    } border rounded-xl p-4 flex items-center gap-3`}>
-      <div className="relative">
-        <div className={`absolute inset-0 rounded-full opacity-20 blur-sm ${
-          isConnected ? 'bg-emerald-400' : 'bg-amber-400'
-        }`}></div>
-        {isConnected ? (
-          <RadioTower className="relative w-6 h-6 text-emerald-600" />
-        ) : (
-          <WifiOff className="relative w-6 h-6 text-amber-600" />
-        )}
+    <div
+      className={`
+        relative
+        ${bgClass} backdrop-blur-lg
+        border border-slate-700/60 ${borderClass}
+        rounded-xl
+        p-4 flex items-center gap-4
+        shadow-sm
+        transition-colors duration-200
+        hover:bg-slate-700/60 hover:border-slate-600/80
+      `}
+    >
+
+      <div className="shrink-0">
+        <div
+          className={`
+            w-10 h-10 rounded-lg flex items-center justify-center
+            ${status === 'success' ? 'bg-emerald-950/20' : ''}
+            ${status === 'warning' ? 'bg-amber-950/20' : ''}
+            ${status === 'error' ? 'bg-rose-950/20' : ''}
+          `}
+        >
+          {icon}
+        </div>
       </div>
-      <div>
-        <p className={`text-sm font-semibold ${
-          isConnected ? 'text-emerald-900' : 'text-amber-900'
-        }`}>
-          {isConnected ? 'Live Updates Active' : 'Connecting...'}
-        </p>
-        <p className={`text-xs mt-0.5 ${
-          isConnected ? 'text-emerald-700' : 'text-amber-700'
-        }`}>
-          {isConnected ? 'Real-time data from Binance' : 'Establishing WebSocket connection'}
-        </p>
+
+
+      <div className="flex-1 min-w-0">
+        <p className={`text-base font-semibold ${textColor}`}>{label}</p>
+        <p className="text-sm text-slate-400 mt-0.5 line-clamp-1">{desc}</p>
       </div>
-      {isConnected && (
-        <div className="ml-auto flex items-center gap-1">
-          <div className="flex items-end space-x-0.5">
+
+
+      {isConnected && !error && (
+        <div className="flex items-center gap-1.5 shrink-0">
+          <div className="flex items-end gap-0.5">
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="w-1 bg-gradient-to-t from-emerald-400 to-emerald-500 rounded-full"
-                style={{ height: `${i * 4}px` }}
+                className={`
+                  w-1 bg-emerald-500/70 rounded-full
+                  animate-pulse
+                `}
+                style={{
+                  height: `${i * 5}px`,
+                  animationDelay: `${i * 150}ms`,
+                }}
               />
             ))}
           </div>
-          <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 ml-1"></div>
         </div>
       )}
     </div>
