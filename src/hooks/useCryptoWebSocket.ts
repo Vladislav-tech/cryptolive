@@ -35,8 +35,6 @@ export const useCryptoWebSocket = (symbols: string[] = defaultSymbols) => {
         ws.onopen = () => {
             setIsConnected(true);
             setError(null);
-            console.log('open');
-            console.log(symbols);
         }
 
         ws.onmessage = (event) => {

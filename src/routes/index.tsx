@@ -15,7 +15,7 @@ export const Route = createFileRoute('/')({
 function App() {
   const { cryptoData, isConnected, error } = useCryptoWebSocket();
   const [searchTerm, setSearchTerm] = useState<string>('');
-  const [sortBy, setSortBy] = useState<SortOption>('change');
+  const [sortBy, setSortBy] = useState<SortOption>('price');
   const [sortType, setSortType] = useState<SortType>('asc');
   const [filterBy, setFilterBy] = useState<FilterOption>('all');
 

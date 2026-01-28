@@ -1,10 +1,12 @@
-// src/components/CryptoCard.tsx
-import { TrendingUp, TrendingDown, Heart } from 'lucide-react';
+import { TrendingUp, TrendingDown, Heart, Star } from 'lucide-react';
 import type { CryptoData } from '@/hooks/useCryptoWebSocket';
 import { memo, useState } from 'react';
 import { useGetFav } from '@/hooks/useGetFav';
 import { useAddFav } from '@/hooks/useAddFav';
 import { useRemoveFav } from '@/hooks/useRemoveFav';
+import { toast } from 'sonner';
+import { useNavigate } from '@tanstack/react-router';
+
 
 interface CryptoCardProps {
   crypto: CryptoData;
@@ -13,21 +15,41 @@ interface CryptoCardProps {
 export const CryptoCard = memo(({ crypto }: CryptoCardProps) => {
   const isPositive = parseFloat(crypto.priceChangePercent) >= 0;
   const symbolName = crypto.symbol.replace('USDT', '');
+  const navigate = useNavigate({ from: '/'})
 
   const favorites = useGetFav();
   const [isFav, setIsFav] = useState<boolean>(
     favorites?.includes(crypto.symbol.toLowerCase()) ?? false
   );
 
-  const handleToggleFav = () => {
-    if (isFav) {
-      useRemoveFav(crypto.symbol);
-      setIsFav(false);
-    } else {
-      useAddFav(crypto.symbol);
-      setIsFav(true);
-    }
-  };
+const handleToggleFav = () => {
+
+  const symbolName = crypto.symbol.replace('USDT', '');
+
+  if (isFav) {
+    useRemoveFav(crypto.symbol);
+    setIsFav(false);
+
+    toast.success(`Remove from favorites`, {
+      description: `${symbolName} is not your favorite any more`,
+      duration: 3200,
+
+    });
+  } else {
+    useAddFav(crypto.symbol);
+    setIsFav(true);
+
+    toast.success(`Add to favorites`, {
+      description: `${symbolName} now is on you favorites`,
+      icon: <Star className="w-5 h-5 text-yellow-400" />,
+      duration: 4000,
+      action: {
+        label: 'Open',
+        onClick: () => navigate({ to: '/favorites'}), 
+      },
+    });
+  }
+};
 
 
   const trendColor = isPositive ? 'emerald' : 'rose';
@@ -75,8 +97,8 @@ export const CryptoCard = memo(({ crypto }: CryptoCardProps) => {
             <Heart
               className={`
                 w-6 h-6 transition-colors duration-200
-                ${isFav 
-                  ? `fill-rose-500 text-rose-500` 
+                ${isFav
+                  ? `fill-rose-500 text-rose-500`
                   : `text-slate-400 hover:text-rose-400`}
               `}
             />

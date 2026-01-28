@@ -28,7 +28,6 @@ export const SearchBar = ({ value, onChange }: SearchBarProps) => {
         `}
       />
 
-      {/* тонкая подсветка снизу при фокусе */}
       <div className="absolute inset-x-4 bottom-0 h-0.5 bg-gradient-to-r from-blue-500/0 via-blue-500/40 to-blue-500/0 rounded-full scale-x-0 group-focus-within:scale-x-100 transition-transform duration-300 origin-center" />
     </div>
   );
