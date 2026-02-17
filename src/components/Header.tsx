@@ -1,4 +1,4 @@
-import { Sparkles, TrendingUp, Star, Menu, X } from "lucide-react";
+import { Sparkles, TrendingUp, Star, Menu, X, User } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 
@@ -17,12 +17,12 @@ const Header = () => {
                 <TrendingUp className="w-8 h-8 text-white animate-pulse" />
               </div>
             </div>
-            
+
             <div className="flex flex-col">
               <div className="flex items-center gap-2">
                 <h1 className="text-3xl md:text-4xl font-bold bg-linear-to-r from-white to-blue-100 bg-clip-text text-transparent">
                   <Link to="/">CryptoLive</Link>
-                  
+
                 </h1>
                 <div className="relative">
                   <Sparkles className="w-6 h-6 text-yellow-400 animate-spin-slow" />
@@ -50,7 +50,13 @@ const Header = () => {
             </Link>
 
 
-
+            <Link
+              to="/profile"
+              className="group relative flex items-center gap-2 px-4 py-2 rounded-xl text-gray-200 hover:text-white transition-all"
+            >
+              <User className="w-5 h-5" />
+              <span>Profile</span>
+            </Link>
 
           </nav>
 
