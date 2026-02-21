@@ -1,10 +1,12 @@
-import { createFileRoute, Link } from '@tanstack/react-router';
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { useMutation } from '@tanstack/react-query'
+import api from '@/api/axiosInstance';
 
 const loginSchema = z.object({
   email: z.string().email('Please enter a valid email'),
@@ -19,6 +21,7 @@ export const Route = createFileRoute('/login')({
 
 function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
   const {
     register,
@@ -32,11 +35,28 @@ function LoginPage() {
     },
   });
 
+  const loginMutation = useMutation({
+    mutationFn: async (data: LoginForm) => {
+      const response = await api.post('/login', data);
+      localStorage.setItem('token', response.data.accessToken);
+      
+      return response.data;
+    },
+
+    onSuccess: () => {
+      toast.success('Welcome');
+      navigate({ to: '/profile'});
+    },
+
+    onError: (err: any) => {
+      const message = err?.response?.data?.message || err?.message || 'Failed to login';
+      toast.error(message);
+      console.log(err);
+    }
+  })
+
   const onSubmit = async (data: LoginForm) => {
-    // TODO: backend
-    toast.success('Logged in successfully! (mock)', {
-      description: `Welcome back!`,
-    });
+    loginMutation.mutate(data);
   };
 
   return (
@@ -120,7 +140,7 @@ function LoginPage() {
 
           <button
             type="submit"
-            disabled={isSubmitting}
+              disabled={loginMutation.isPending}
             className="
               w-full py-3 px-4
               bg-blue-600 hover:bg-blue-700
@@ -130,6 +150,7 @@ function LoginPage() {
               transition-all duration-200
               disabled:opacity-60 disabled:cursor-not-allowed
               shadow-sm
+              cursor-pointer
             "
           >
             {isSubmitting ? 'Signing in...' : 'Sign In'}

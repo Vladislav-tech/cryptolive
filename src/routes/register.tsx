@@ -6,13 +6,16 @@ import { Mail, User, Lock, Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from '@tanstack/react-router';
 import { toast } from 'sonner';
+import { useMutation } from '@tanstack/react-query';
+import type { IUserData } from '@/types/IUserData';
+import api from '@/api/axiosInstance';
 
 const registerSchema = z.object({
-  username: z
+  name: z
     .string()
-    .min(3, 'Username must be at least 3 characters')
-    .max(20, 'Username must be at most 20 characters')
-    .regex(/^[a-zA-Z0-9_]+$/, 'Username can only contain letters, numbers, and underscores'),
+    .min(3, 'Name must be at least 3 characters')
+    .max(20, 'Name must be at most 20 characters')
+    .regex(/^[a-zA-Z0-9_]+$/, 'Name can only contain letters, numbers, and underscores'),
   email: z.string().email('Please enter a valid email'),
   password: z
     .string()
@@ -38,22 +41,46 @@ function RegisterPage() {
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
+    reset,
   } = useForm<RegisterForm>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      username: '',
+      name: '',
       email: '',
       password: '',
       confirmPassword: '',
     },
   });
 
+  const registerMutation = useMutation({
+    mutationFn: async (data: IUserData) => {
+      const response = await api.post('/registration', data);
+      localStorage.setItem('token', response.data.accessToken);
+
+    },
+
+    onSuccess: () => {
+      toast.success('Success!', {
+        description: 'Activation link was sent on your email',
+      });
+
+    reset()
+    },
+
+    onError: (err: any) => {
+      toast.error('Failed to register', {
+        description: err?.response?.data?.message || err?.message || 'An error occurred',
+      });
+    }
+
+  });
+
   const onSubmit = async (data: RegisterForm) => {
-    // TODO: connect to backend later
-    toast.success('Registration successful! (mock)', {
-      description: `Welcome, ${data.username}!`,
-    });
+    console.log(data.email, data.password, data.name);
+    const { confirmPassword, ...payload } = data;
+
+    registerMutation.mutate(payload);
   };
 
   return (
@@ -73,22 +100,22 @@ function RegisterPage() {
               </div>
               <input
                 type="text"
-                placeholder="Username"
+                placeholder="Name"
                 className={`
                   block w-full pl-10 pr-3 py-3
                   bg-slate-800/40 backdrop-blur-md border rounded-lg
-                  ${errors.username ? 'border-rose-500/60' : 'border-slate-700/60'}
+                  ${errors.name ? 'border-rose-500/60' : 'border-slate-700/60'}
                   text-slate-100 placeholder-slate-500
                   focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/50
                   transition-all duration-200
                 `}
-                {...register('username')}
+                {...register('name')}
               />
             </div>
 
             <div className="h-6 mt-1">
-              {errors.username && (
-                <p className="text-sm text-rose-400">{errors.username.message}</p>
+              {errors.name && (
+                <p className="text-sm text-rose-400">{errors.name.message}</p>
               )}
             </div>
           </div>
@@ -199,7 +226,7 @@ function RegisterPage() {
 
           <button
             type="submit"
-            disabled={isSubmitting}
+            disabled={registerMutation.isPending}
             className="
               w-full py-3 px-4
               bg-blue-600 hover:bg-blue-700
@@ -212,7 +239,7 @@ function RegisterPage() {
               cursor-pointer
             "
           >
-            {isSubmitting ? 'Creating account...' : 'Sign Up'}
+            {registerMutation.isPending ? 'Creating account...' : 'Sign Up'}
           </button>
         </form>
 
