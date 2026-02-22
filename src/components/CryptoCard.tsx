@@ -1,62 +1,33 @@
-import { TrendingUp, TrendingDown, Heart, Star } from 'lucide-react';
+import { TrendingUp, TrendingDown, Heart } from 'lucide-react';
 import type { CryptoData } from '@/hooks/useCryptoWebSocket';
-import { memo, useState } from 'react';
-import { useGetFav } from '@/hooks/useGetFav';
-import { useAddFav } from '@/hooks/useAddFav';
-import { useRemoveFav } from '@/hooks/useRemoveFav';
-import { toast } from 'sonner';
+import { memo } from 'react';
 import { useNavigate } from '@tanstack/react-router';
-
+import { useFavoriteToggle } from '@/hooks/useFavoriteToggle';
 
 interface CryptoCardProps {
   crypto: CryptoData;
+  isFav: boolean;
 }
 
-const CryptoCardComponent = ({ crypto }: CryptoCardProps) => {
+const CryptoCardComponent = ({ crypto, isFav }: CryptoCardProps) => {
   const isPositive = parseFloat(crypto.priceChangePercent) >= 0;
   const symbolName = crypto.symbol.replace('USDT', '');
-  const navigate = useNavigate({ from: '/'})
+  const navigate = useNavigate({ from: '/' });
 
-  const favorites = useGetFav();
-  const [isFav, setIsFav] = useState<boolean>(
-    favorites?.includes(crypto.symbol.toLowerCase()) ?? false
+  const { mutate: toggleFavorite, isPending } = useFavoriteToggle(
+    crypto.symbol.toLowerCase(),
+    isFav,
+    () => navigate({ to: '/favorites' })
   );
 
-const handleToggleFav = () => {
-
-  const symbolName = crypto.symbol.replace('USDT', '');
-
-  if (isFav) {
-    useRemoveFav(crypto.symbol);
-    setIsFav(false);
-
-    toast.success(`Remove from favorites`, {
-      description: `${symbolName} is not your favorite any more`,
-      duration: 3200,
-
-    });
-  } else {
-    useAddFav(crypto.symbol);
-    setIsFav(true);
-
-    toast.success(`Add to favorites`, {
-      description: `${symbolName} now is on you favorites`,
-      icon: <Star className="w-5 h-5 text-yellow-400" />,
-      duration: 4000,
-      action: {
-        label: 'Open',
-        onClick: () => navigate({ to: '/favorites'}), 
-      },
-    });
-  }
-};
-
+  const handleToggleFav = () => {
+    toggleFavorite();
+  };
 
   const trendColor = isPositive ? 'emerald' : 'rose';
   const borderClass = `border-l-4 border-l-${trendColor}-600/80`;
   const textChangeClass = `text-${trendColor}-400`;
   const iconColor = `text-${trendColor}-500`;
-
 
   const gradientClass = isPositive
     ? 'bg-gradient-to-r from-emerald-950/10 via-emerald-950/3 to-transparent'
@@ -91,12 +62,14 @@ const handleToggleFav = () => {
           <button
             type="button"
             onClick={handleToggleFav}
+            disabled={isPending}
             className="p-2 -m-2 rounded-full hover:bg-slate-600/40 transition-colors"
             aria-label={isFav ? 'Remove from favorites' : 'Add to favorites'}
           >
             <Heart
               className={`
                 w-6 h-6 transition-colors duration-200
+                cursor-pointer
                 ${isFav
                   ? `fill-rose-500 text-rose-500`
                   : `text-slate-400 hover:text-rose-400`}

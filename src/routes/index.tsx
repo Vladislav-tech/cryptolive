@@ -7,6 +7,9 @@ import { filterCryptos, sortCryptos } from '@/utils/cryptoFilters';
 import { createFileRoute } from '@tanstack/react-router'
 import { TrendingUp } from 'lucide-react';
 import { useMemo, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { getFavorites } from '@/api/favoritesApi';
+import { FAVORITES_QUERY_KEY } from '@/utils/queryKeys';
 
 export const Route = createFileRoute('/')({
   component: App,
@@ -19,7 +22,14 @@ function App() {
   const [sortType, setSortType] = useState<SortType>('asc');
   const [filterBy, setFilterBy] = useState<FilterOption>('all');
 
-  console.log('Crypto data:', cryptoData);
+  const { data: favorites} = useQuery({
+    queryKey: FAVORITES_QUERY_KEY,
+    queryFn: getFavorites,
+    select: (data) => data?.data?.favorites || [],
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    
+  });
 
   const processedCryptos = useMemo(() => {
     const filtered = filterCryptos(cryptoData, searchTerm, filterBy);
@@ -77,11 +87,14 @@ function App() {
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {processedCryptos.map(crypto => (
-          <div key={crypto.symbol}>
-            <CryptoCard crypto={crypto} />
-          </div>
-        ))}
+        {processedCryptos.map(crypto => {
+          const isFav = favorites?.includes(crypto.symbol.toLowerCase()) ?? false;
+          return (
+            <div key={crypto.symbol}>
+              <CryptoCard crypto={crypto} isFav={isFav} />
+            </div>
+          );
+        })}
       </div>
     </div>
 

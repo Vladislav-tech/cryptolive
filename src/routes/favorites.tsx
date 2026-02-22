@@ -1,7 +1,9 @@
+import { getFavorites } from '@/api/favoritesApi';
 import { ConnectionStatus } from '@/components/ConnectionStatus';
 import { CryptoCard } from '@/components/CryptoCard';
 import { useCryptoWebSocket } from '@/hooks/useCryptoWebSocket';
-import { useGetFav } from '@/hooks/useGetFav';
+import { FAVORITES_QUERY_KEY } from '@/utils/queryKeys';
+import { useQuery } from '@tanstack/react-query';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { Heart, Star, TrendingUp } from 'lucide-react';
 import { useMemo } from 'react';
@@ -11,12 +13,18 @@ export const Route = createFileRoute('/favorites')({
 });
 
 function Favorites() {
-    const symbols = useGetFav() ?? [];
-    const { cryptoData, isConnected, error } = useCryptoWebSocket(symbols);
+    const { data: favorites = []} = useQuery({
+        queryKey: FAVORITES_QUERY_KEY,
+        queryFn: getFavorites,
+        select: (data) => data?.data?.favorites ?? [],
+        refetchOnMount: 'always',
+        refetchOnWindowFocus: false,
+    });
+
+    const { cryptoData, isConnected, error } = useCryptoWebSocket(favorites);
 
     const isLoading = !isConnected || cryptoData.length === 0;
-    const hasFavorites = symbols.length > 0;
-
+    const hasFavorites = favorites.length > 0;
 
     const sortedCryptoData = useMemo(() => {
         return [...cryptoData].sort((a, b) =>
@@ -117,9 +125,12 @@ function Favorites() {
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {sortedCryptoData.map((crypto) => (
-                            <CryptoCard key={crypto.symbol} crypto={crypto} />
-                        ))}
+                        {sortedCryptoData.map((crypto) => {
+                            const isFav = favorites.includes(crypto.symbol.toLowerCase());
+                            return (
+                                <CryptoCard key={crypto.symbol} crypto={crypto} isFav={isFav} />
+                            );
+                        })}
                     </div>
                 </>
             )}
