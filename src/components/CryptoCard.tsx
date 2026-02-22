@@ -1,4 +1,4 @@
-import { TrendingUp, TrendingDown, Heart } from 'lucide-react';
+import { TrendingUp, TrendingDown, Heart, ArrowUp, ArrowDown, BarChart3 } from 'lucide-react';
 import type { CryptoData } from '@/hooks/useCryptoWebSocket';
 import { memo } from 'react';
 import { useNavigate } from '@tanstack/react-router';
@@ -8,6 +8,9 @@ interface CryptoCardProps {
   crypto: CryptoData;
   isFav: boolean;
 }
+
+const IMG_BASE_URL = 'https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color';
+const IMG_PLACEHOLDER_URL = 'https://placehold.co/56x56/334155/94a3b8?text=';
 
 const CryptoCardComponent = ({ crypto, isFav }: CryptoCardProps) => {
   const isPositive = parseFloat(crypto.priceChangePercent) >= 0;
@@ -20,18 +23,15 @@ const CryptoCardComponent = ({ crypto, isFav }: CryptoCardProps) => {
     () => navigate({ to: '/favorites' })
   );
 
-  const handleToggleFav = () => {
-    toggleFavorite();
-  };
+  const handleToggleFav = () => toggleFavorite();
 
   const trendColor = isPositive ? 'emerald' : 'rose';
   const borderClass = `border-l-4 border-l-${trendColor}-600/80`;
-  const textChangeClass = `text-${trendColor}-400`;
-  const iconColor = `text-${trendColor}-500`;
 
-  const gradientClass = isPositive
-    ? 'bg-gradient-to-r from-emerald-950/10 via-emerald-950/3 to-transparent'
-    : 'bg-gradient-to-r from-rose-950/10 via-rose-950/3 to-transparent';
+  const formatNumber = (value: string | number): string => {
+    const num = typeof value === 'string' ? parseFloat(value) : value;
+    return isNaN(num) ? '0' : num.toLocaleString('en-US');
+  };
 
   return (
     <div
@@ -41,22 +41,33 @@ const CryptoCardComponent = ({ crypto, isFav }: CryptoCardProps) => {
         border border-slate-700/60 rounded-xl
         overflow-hidden
         shadow-sm
-        transition-colors duration-200
-        hover:bg-slate-700/60 hover:border-slate-600/80
+        transition-all duration-200
+        hover:bg-slate-700/70 hover:border-slate-600/80
         ${borderClass}
-        ${gradientClass}
       `}
     >
-      <div className="p-5 flex flex-col h-full relative z-10">
+      <div className="p-5 flex flex-col h-full">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 bg-slate-700 rounded-2xl ring-1 ring-inset ring-slate-600 flex-shrink-0 overflow-hidden">
+              <img
+                src={`${IMG_BASE_URL}/${symbolName.toLowerCase()}.png`}
+                alt={symbolName}
+                className="w-full h-full object-contain p-2"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = `${IMG_PLACEHOLDER_URL}${symbolName.slice(0, 3)}`;
+                }}
+              />
+            </div>
 
-        <div className="flex items-start justify-between mb-4">
-          <div>
-            <h3 className="text-2xl font-bold text-white tracking-tight">
-              {symbolName}
-            </h3>
-            <p className="text-sm text-slate-400 mt-0.5 font-medium">
-              {crypto.symbol}
-            </p>
+            <div>
+              <h3 className="text-[26px] font-bold text-white tracking-tight">
+                {symbolName}
+              </h3>
+              <p className="text-sm text-slate-400 mt-0.5 font-medium">
+                {crypto.symbol}
+              </p>
+            </div>
           </div>
 
           <button
@@ -67,50 +78,55 @@ const CryptoCardComponent = ({ crypto, isFav }: CryptoCardProps) => {
             aria-label={isFav ? 'Remove from favorites' : 'Add to favorites'}
           >
             <Heart
-              className={`
-                w-6 h-6 transition-colors duration-200
-                cursor-pointer
-                ${isFav
-                  ? `fill-rose-500 text-rose-500`
-                  : `text-slate-400 hover:text-rose-400`}
-              `}
+              className={`w-6 h-6 transition-colors duration-200 ${
+                isFav
+                  ? 'fill-rose-500 text-rose-500'
+                  : 'text-slate-400 hover:text-rose-400'
+              }`}
             />
           </button>
         </div>
 
-
-        <div className="mb-5">
-          <p className="text-4xl font-black text-white tabular-nums leading-none">
-            ${crypto.price}
+        <div className="mb-6">
+          <p className="text-3xl font-semibold text-white tabular-nums font-mono tracking-tighter">
+            ${formatNumber(crypto.price)}
           </p>
 
-          <div className={`mt-3 flex items-center gap-2.5 text-lg font-medium ${textChangeClass}`}>
+          <div className={`mt-3 flex items-center gap-2 text-lg font-medium ${isPositive ? 'text-emerald-400' : 'text-rose-400'}`}>
             {isPositive ? (
-              <TrendingUp className={`w-5 h-5 ${iconColor}`} />
+              <TrendingUp className="w-5 h-5" />
             ) : (
-              <TrendingDown className={`w-5 h-5 ${iconColor}`} />
+              <TrendingDown className="w-5 h-5" />
             )}
             <span>{crypto.priceChange} USD</span>
             <span className="text-slate-500 mx-1">•</span>
-            <span className="font-semibold">
+            <span className="font-semibold font-mono">
               {isPositive ? '+' : ''}{crypto.priceChangePercent}%
             </span>
           </div>
         </div>
 
-
-        <div className="grid grid-cols-3 gap-4 mt-auto pt-4 border-t border-slate-700/50 text-sm">
-          <div>
-            <p className="text-slate-500 text-xs font-medium">High</p>
-            <p className="font-semibold text-slate-200 mt-0.5">${crypto.high}</p>
+        <div className="grid grid-cols-3 gap-4 mt-auto pt-5 border-t border-slate-700/50 text-sm">
+          <div className="flex items-center gap-1.5">
+            <ArrowUp className="w-4 h-4 text-emerald-400" />
+            <div>
+              <p className="text-slate-500 text-xs font-medium">High</p>
+              <p className="font-semibold text-slate-200 mt-0.5">${formatNumber(crypto.high)}</p>
+            </div>
           </div>
-          <div>
-            <p className="text-slate-500 text-xs font-medium">Low</p>
-            <p className="font-semibold text-slate-200 mt-0.5">${crypto.low}</p>
+          <div className="flex items-center gap-1.5">
+            <ArrowDown className="w-4 h-4 text-rose-400" />
+            <div>
+              <p className="text-slate-500 text-xs font-medium">Low</p>
+              <p className="font-semibold text-slate-200 mt-0.5">${formatNumber(crypto.low)}</p>
+            </div>
           </div>
-          <div>
-            <p className="text-slate-500 text-xs font-medium">Vol (24h)</p>
-            <p className="font-semibold text-slate-200 mt-0.5">{crypto.volume}K</p>
+          <div className="flex items-center gap-1.5">
+            <BarChart3 className="w-4 h-4 text-sky-400" />
+            <div>
+              <p className="text-slate-500 text-xs font-medium">Vol 24h</p>
+              <p className="font-semibold text-slate-200 mt-0.5">{formatNumber(crypto.volume)}K</p>
+            </div>
           </div>
         </div>
       </div>
