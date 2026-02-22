@@ -12,7 +12,7 @@ interface CryptoCardProps {
   crypto: CryptoData;
 }
 
-export const CryptoCard = memo(({ crypto }: CryptoCardProps) => {
+const CryptoCardComponent = ({ crypto }: CryptoCardProps) => {
   const isPositive = parseFloat(crypto.priceChangePercent) >= 0;
   const symbolName = crypto.symbol.replace('USDT', '');
   const navigate = useNavigate({ from: '/'})
@@ -143,4 +143,19 @@ const handleToggleFav = () => {
       </div>
     </div>
   );
-});
+};
+
+function areEqual(prevProps: CryptoCardProps, nextProps: CryptoCardProps) {
+  return (
+    prevProps.crypto.symbol === nextProps.crypto.symbol &&
+    prevProps.crypto.price === nextProps.crypto.price &&
+    prevProps.crypto.priceChange === nextProps.crypto.priceChange &&
+    prevProps.crypto.priceChangePercent === nextProps.crypto.priceChangePercent &&
+    prevProps.crypto.volume === nextProps.crypto.volume &&
+    prevProps.crypto.high === nextProps.crypto.high &&
+    prevProps.crypto.low === nextProps.crypto.low &&
+    prevProps.crypto.lastUpdate === nextProps.crypto.lastUpdate
+  );
+}
+
+export const CryptoCard = memo(CryptoCardComponent, areEqual);

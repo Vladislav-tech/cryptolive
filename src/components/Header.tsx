@@ -1,8 +1,9 @@
 import { Sparkles, TrendingUp, Star, Menu, X, User } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
+import React from 'react';
 
-const Header = () => {
+const HeaderComponent = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
@@ -91,4 +92,4 @@ const Header = () => {
   );
 };
 
-export default Header;
+export const Header = React.memo(HeaderComponent);

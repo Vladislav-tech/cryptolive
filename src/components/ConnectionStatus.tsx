@@ -1,11 +1,12 @@
 import { WifiOff, AlertCircle, RadioTower } from 'lucide-react';
+import React from 'react';
 
 interface ConnectionStatusProps {
   isConnected: boolean;
   error: string | null;
 }
 
-export const ConnectionStatus = ({ isConnected, error }: ConnectionStatusProps) => {
+const ConnectionStatusComponent = ({ isConnected, error }: ConnectionStatusProps) => {
 
   let status: 'success' | 'warning' | 'error' = 'warning';
   let icon = <WifiOff  className="w-5 h-5" />;
@@ -88,3 +89,5 @@ export const ConnectionStatus = ({ isConnected, error }: ConnectionStatusProps) 
     </div>
   );
 };
+
+export const ConnectionStatus = React.memo(ConnectionStatusComponent);

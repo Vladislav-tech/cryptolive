@@ -19,6 +19,8 @@ function App() {
   const [sortType, setSortType] = useState<SortType>('asc');
   const [filterBy, setFilterBy] = useState<FilterOption>('all');
 
+  console.log('Crypto data:', cryptoData);
+
   const processedCryptos = useMemo(() => {
     const filtered = filterCryptos(cryptoData, searchTerm, filterBy);
     return sortCryptos(filtered, sortBy, sortType);

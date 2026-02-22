@@ -1,11 +1,12 @@
 import { Search } from 'lucide-react';
+import React from 'react';
 
 interface SearchBarProps {
   value: string;
   onChange: (value: string) => void;
 }
 
-export const SearchBar = ({ value, onChange }: SearchBarProps) => {
+const SearchBarComponent = ({ value, onChange }: SearchBarProps) => {
   return (
     <div className="relative group">
       <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -32,3 +33,5 @@ export const SearchBar = ({ value, onChange }: SearchBarProps) => {
     </div>
   );
 };
+
+export const SearchBar = React.memo(SearchBarComponent);

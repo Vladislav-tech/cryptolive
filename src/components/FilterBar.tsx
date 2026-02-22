@@ -1,4 +1,5 @@
 import { Filter, ArrowUpDown, MoveUp, MoveDown } from 'lucide-react';
+import React from 'react';
 
 
 export type SortOption = 'name' | 'price' | 'change' | 'volume';
@@ -14,7 +15,7 @@ interface FilterBarProps {
   onFilterChange: (filter: FilterOption) => void;
 }
 
-export const FilterBar = ({
+const FilterBarComponent = ({
   sortBy,
   onSortChange,
   onSortType,
@@ -111,3 +112,13 @@ return (
     </div>
   );
 };
+
+function areEqual(prevProps: FilterBarProps, nextProps: FilterBarProps) {
+  return (
+    prevProps.sortBy === nextProps.sortBy &&
+    prevProps.sortType === nextProps.sortType &&
+    prevProps.filterBy === nextProps.filterBy
+  );
+}
+
+export const FilterBar = React.memo(FilterBarComponent, areEqual);
