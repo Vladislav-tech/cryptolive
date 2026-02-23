@@ -28,6 +28,7 @@ api.interceptors.response.use((config) => {
             return api.request(originalRequest);
         } catch (error) {
             console.log('Not auth', error);
+            throw error;
         }
     }
 

@@ -1,6 +1,7 @@
 import { addFavorite, removeFavorite } from "@/api/favoritesApi";
 import { FAVORITES_QUERY_KEY } from "@/utils/queryKeys";
 import { useQueryClient, useMutation } from "@tanstack/react-query"
+import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 
 export const useFavoriteToggle = (
@@ -10,6 +11,7 @@ export const useFavoriteToggle = (
 ) => {
     const queryClient = useQueryClient();
     const symbolName = ticker.replace('usdt', '');
+    const navigate = useNavigate();
 
     return useMutation({
         mutationFn: async () => {
@@ -34,9 +36,18 @@ export const useFavoriteToggle = (
 
             return { previous };
         },
-        onError: (_, __, context) => {
+        onError: (error, __, context) => {
             queryClient.setQueryData(FAVORITES_QUERY_KEY, context?.previous);
-            toast.error('Failed to update favorites');
+            toast.error('Failed to update favorites', {
+                description: `${error}`,
+                action: {
+                    label: 'Sign in',
+                    onClick: () => {
+                        navigate({ to: '/login'})
+                    }
+                },
+                duration: 4000
+            });
         },
         onSuccess: (newIsFav) => {
             if (newIsFav) {

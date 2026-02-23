@@ -28,6 +28,7 @@ function App() {
     select: (data) => data?.data?.favorites || [],
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
+    retry: 1
     
   });
 

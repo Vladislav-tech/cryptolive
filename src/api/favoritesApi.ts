@@ -6,14 +6,19 @@ export const getFavorites = async () => {
     } catch (error) {
         throw error;
     }
-    
+
 }
 
 export const addFavorite = async (ticker: string) => {
     try {
         await api.post('/favorites/add', { ticker: ticker.toLowerCase() });
-    } catch (error) {
-        throw error;
+    } catch (error: any) {
+        if (error?.status === 401) {
+            throw new Error('You must sign in to add favorite')
+        } else {
+            throw error;
+
+        }
     }
 }
 
@@ -24,7 +29,11 @@ export const removeFavorite = async (ticker: string) => {
                 ticker: ticker.toLowerCase(),
             },
         });
-    } catch (error) {
-        throw error;
+    } catch (error: any) {
+        if (error?.status === 401) {
+            throw new Error('You must sign in to remove favorite')
+        } else {
+            throw error;
+        }
     }
 }
