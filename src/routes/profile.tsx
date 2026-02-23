@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { LogOut, User, Mail, ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getUserInfo } from '@/api/getUserInfoApi';
 import { capitalize } from '@/utils/capitalize';
 import { checkAuth, logout } from '@/api/authApi';
@@ -13,6 +13,7 @@ export const Route = createFileRoute('/profile')({
 
 function ProfilePage() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const { data: userInfo, isLoading } = useQuery({
     queryKey: ['userInfo'],
@@ -29,10 +30,12 @@ function ProfilePage() {
         description: 'See you later!',
       });
       navigate({ to: '/login' });
+      queryClient.clear();
     },
 
-    onError: () => {
+    onError: (error) => {
       toast.error('Failed to logout');
+      console.error(error);
     },
   })
 
@@ -48,9 +51,6 @@ function ProfilePage() {
         navigate({ to: '/login' });
         toast.error('You are not authenticated. Please login to access your profile.');
       }
-
-
-      
     })();
     return () => {
       mounted = false;

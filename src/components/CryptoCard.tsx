@@ -53,6 +53,7 @@ const CryptoCardComponent = ({ crypto, isFav }: CryptoCardProps) => {
               <img
                 src={`${IMG_BASE_URL}/${symbolName.toLowerCase()}.png`}
                 alt={symbolName}
+                loading="lazy"
                 className="w-full h-full object-contain p-2"
                 onError={(e) => {
                   (e.target as HTMLImageElement).src = `${IMG_PLACEHOLDER_URL}${symbolName.slice(0, 3)}`;
