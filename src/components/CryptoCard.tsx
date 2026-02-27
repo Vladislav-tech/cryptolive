@@ -1,4 +1,4 @@
-import { TrendingUp, TrendingDown, Heart, ArrowUp, ArrowDown, BarChart3 } from 'lucide-react';
+import { TrendingUp, TrendingDown, Heart, ArrowUp, ArrowDown, BarChart3, LoaderCircle } from 'lucide-react';
 import type { CryptoData } from '@/hooks/useCryptoWebSocket';
 import { memo } from 'react';
 import { useNavigate } from '@tanstack/react-router';
@@ -75,16 +75,17 @@ const CryptoCardComponent = ({ crypto, isFav }: CryptoCardProps) => {
             type="button"
             onClick={handleToggleFav}
             disabled={isPending}
-            className="p-2 -m-2 rounded-full hover:bg-slate-600/40 transition-colors"
+            className="p-2 -m-2 rounded-full hover:bg-slate-600/40 transition-colors cursor-pointer"
             aria-label={isFav ? 'Remove from favorites' : 'Add to favorites'}
+            title={isPending ? 'Updating favorites status' : isFav ? 'Remove from favorites' : 'Add to favorites'}
           >
-            <Heart
-              className={`w-6 h-6 transition-colors duration-200 ${
-                isFav
-                  ? 'fill-rose-500 text-rose-500'
-                  : 'text-slate-400 hover:text-rose-400'
-              }`}
-            />
+            {isPending ? <LoaderCircle className="w-6 h-6 animate-spin text-slate-400" /> : (<Heart
+              className={`w-6 h-6 transition-colors duration-200 ${isFav
+                ? 'fill-rose-500 text-rose-500'
+                : 'text-slate-400 hover:text-rose-400'
+                }`}
+            />)}
+
           </button>
         </div>
 

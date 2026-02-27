@@ -7,6 +7,8 @@ interface IFormatDate {
 }
 
 export const formatDate = ({ dateString, local = 'en-US', shortType = true }: IFormatDate): string => {
+    if (!dateString) return '';
+
     const date = new Date(dateString);
 
     const options: Intl.DateTimeFormatOptions = shortType

@@ -1,6 +1,7 @@
 import { getFavorites } from '@/api/favoritesApi';
 import { ConnectionStatus } from '@/components/ConnectionStatus';
-import { CryptoCard } from '@/components/CryptoCard';
+import CryptoCardList from '@/components/CryptoCardList';
+import { SkeletonList } from '@/components/skeletons';
 import { useCryptoWebSocket } from '@/hooks/useCryptoWebSocket';
 import { FAVORITES_QUERY_KEY } from '@/utils/queryKeys';
 import { useQuery } from '@tanstack/react-query';
@@ -13,7 +14,7 @@ export const Route = createFileRoute('/favorites')({
 });
 
 function Favorites() {
-    const { data: favorites = []} = useQuery({
+    const { data: favorites = [], } = useQuery({
         queryKey: FAVORITES_QUERY_KEY,
         queryFn: getFavorites,
         select: (data) => data?.data?.favorites ?? [],
@@ -27,16 +28,18 @@ function Favorites() {
     const hasFavorites = favorites.length > 0;
 
     const sortedCryptoData = useMemo(() => {
-        return [...cryptoData].sort((a, b) =>
+        const favoritesSet = new Set(favorites.map(favorite => favorite.toLowerCase()));
+        const filtered = cryptoData.filter(crypto => 
+            favoritesSet.has(crypto.symbol.toLowerCase())
+        );
+        return [...filtered].sort((a, b) =>
             parseFloat(b.priceChangePercent) - parseFloat(a.priceChangePercent)
         );
-    }, [cryptoData]);
+    }, [cryptoData, favorites]);
 
     return (
         <div className="space-y-6 mb-8">
             <ConnectionStatus isConnected={isConnected} error={error} />
-
-
             {!hasFavorites && (
                 <div className="flex flex-col items-center justify-center min-h-[60vh] py-16 px-4 text-center">
 
@@ -51,30 +54,25 @@ function Favorites() {
                         <Star
                             className="w-12 h-12 text-yellow-500 stroke-[1.5]"
                         />
-
                         <div className="
               absolute inset-0 
               bg-yellow-500/5 rounded-2xl blur-xl 
               opacity-60
             " />
                     </div>
-
                     <h2 className="
             text-3xl sm:text-4xl font-bold 
             text-white tracking-tight mb-4
           ">
                         Your favorites list is empty
                     </h2>
-
                     <p className="
             text-lg text-slate-400 max-w-md mx-auto mb-10
             leading-relaxed
           ">
-
                         Add the coins you want to track in real time.
                         They will be displayed here with current prices and changes.
                     </p>
-
                     <Link
                         to="/"
                         className="
@@ -103,35 +101,18 @@ function Favorites() {
 
             {hasFavorites && isLoading && (
                 <div className="text-center py-16">
-                    <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100/10 rounded-full mb-6 backdrop-blur-sm border border-blue-500/20">
-                        <TrendingUp className="w-8 h-8 text-blue-400 animate-pulse" />
-                    </div>
-                    <p className="text-slate-300 text-lg font-medium">
-                        Loading your favorite coins...
-                    </p>
-                    <p className="text-slate-500 text-sm mt-2">
-                        Connecting to Binance WebSocket
-                    </p>
+                    <SkeletonList count={6} />
                 </div>
             )}
-
 
             {hasFavorites && !isLoading && cryptoData.length > 0 && (
                 <>
                     <div className="flex items-center justify-between">
                         <h2 className="text-xl sm:text-2xl font-semibold text-white">
-                            Favorites ({cryptoData.length})
+                            Favorites ({favorites.length})
                         </h2>
                     </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {sortedCryptoData.map((crypto) => {
-                            const isFav = favorites.includes(crypto.symbol.toLowerCase());
-                            return (
-                                <CryptoCard key={crypto.symbol} crypto={crypto} isFav={isFav} />
-                            );
-                        })}
-                    </div>
+                    <CryptoCardList cryptos={sortedCryptoData} favorites={favorites} />
                 </>
             )}
 

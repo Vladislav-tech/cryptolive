@@ -1,15 +1,15 @@
 import { ConnectionStatus } from '@/components/ConnectionStatus';
-import { CryptoCard } from '@/components/CryptoCard';
 import { FilterBar, type FilterOption, type SortOption, type SortType } from '@/components/FilterBar';
 import { SearchBar } from '@/components/SearchBar';
 import { useCryptoWebSocket } from '@/hooks/useCryptoWebSocket';
 import { filterCryptos, sortCryptos } from '@/utils/cryptoFilters';
 import { createFileRoute } from '@tanstack/react-router'
-import { TrendingUp } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getFavorites } from '@/api/favoritesApi';
 import { FAVORITES_QUERY_KEY } from '@/utils/queryKeys';
+import { SkeletonList } from '@/components/skeletons';
+import CryptoCardList from '@/components/CryptoCardList';
 
 export const Route = createFileRoute('/')({
   component: App,
@@ -22,15 +22,17 @@ function App() {
   const [sortType, setSortType] = useState<SortType>('asc');
   const [filterBy, setFilterBy] = useState<FilterOption>('all');
 
-  const { data: favorites} = useQuery({
+  const { data: favorites = [] } = useQuery({
     queryKey: FAVORITES_QUERY_KEY,
     queryFn: getFavorites,
     select: (data) => data?.data?.favorites || [],
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     retry: 1
-    
+
   });
+
+  const isLoading = !isConnected || cryptoData.length === 0;
 
   const processedCryptos = useMemo(() => {
     const filtered = filterCryptos(cryptoData, searchTerm, filterBy);
@@ -40,7 +42,6 @@ function App() {
   return (
     <div className="space-y-6 mb-8">
       <ConnectionStatus isConnected={isConnected} error={error} />
-
       <div
         className="
     bg-glass-bg backdrop-blur-md
@@ -59,18 +60,8 @@ function App() {
           filterBy={filterBy}
           onFilterChange={setFilterBy}
         />
-
-
       </div>
 
-      {cryptoData.length === 0 && isConnected && (
-        <div className="text-center py-16">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
-            <TrendingUp className="w-8 h-8 text-blue-600 animate-pulse" />
-          </div>
-          <p className="text-gray-600 text-lg">Loading cryptocurrency data...</p>
-        </div>
-      )}
 
       {processedCryptos.length === 0 && cryptoData.length > 0 && (
         <div className="text-center py-16">
@@ -87,16 +78,8 @@ function App() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {processedCryptos.map(crypto => {
-          const isFav = favorites?.includes(crypto.symbol.toLowerCase()) ?? false;
-          return (
-            <div key={crypto.symbol}>
-              <CryptoCard crypto={crypto} isFav={isFav} />
-            </div>
-          );
-        })}
-      </div>
+      {isLoading ? <SkeletonList count={6} /> : <CryptoCardList cryptos={processedCryptos} favorites={favorites} />}
+
     </div>
 
   );

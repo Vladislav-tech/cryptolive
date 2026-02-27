@@ -29,7 +29,7 @@ const SearchBarComponent = ({ value, onChange }: SearchBarProps) => {
         `}
       />
 
-      <div className="absolute inset-x-4 bottom-0 h-0.5 bg-gradient-to-r from-blue-500/0 via-blue-500/40 to-blue-500/0 rounded-full scale-x-0 group-focus-within:scale-x-100 transition-transform duration-300 origin-center" />
+      <div className="absolute inset-x-4 bottom-0 h-0.5 bg-linear-to-r from-blue-500/0 via-blue-500/40 to-blue-500/0 rounded-full scale-x-0 group-focus-within:scale-x-100 transition-transform duration-300 origin-center" />
     </div>
   );
 };

@@ -55,7 +55,7 @@ const FilterBarComponent = ({
           ref={sliderRef}
           className={`
             absolute inset-y-1 left-0 
-            bg-gradient-to-r from-blue-600/80 to-indigo-600/80 
+            bg-linear-to-r from-blue-600/80 to-indigo-600/80 
             rounded-lg transition-all duration-300 ease-out
             shadow-md shadow-indigo-500/20
           `}
