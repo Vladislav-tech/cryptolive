@@ -64,6 +64,7 @@ function ForgotPasswordPage() {
             </p>
             <Link
               to="/login"
+              search={{ redirect: '' }}
               className="inline-block text-blue-400 hover:text-blue-300 font-medium"
             >
               Back to sign in
@@ -123,7 +124,7 @@ function ForgotPasswordPage() {
 
         <div className="text-center text-sm text-slate-400">
           Remember your password?{' '}
-          <Link to="/login" className="text-blue-400 hover:text-blue-300 font-medium">
+          <Link to="/login" search={{ redirect: '' }} className="text-blue-400 hover:text-blue-300 font-medium">
             Sign in
           </Link>
         </div>

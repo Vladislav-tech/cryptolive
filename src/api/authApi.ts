@@ -8,7 +8,7 @@ export const registerUser = async (data: IUserData): Promise<AxiosResponse<AuthR
     return response;
 }
 
-export const login = async (data: IUserData): Promise<AxiosResponse<AuthResponse>> => {
+export const login = async (data: Omit<IUserData, 'name'>): Promise<AxiosResponse<AuthResponse>> => {
     try {
         const response = await api.post('/login', data);
         return response;

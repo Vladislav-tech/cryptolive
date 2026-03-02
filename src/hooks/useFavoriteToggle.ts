@@ -43,7 +43,7 @@ export const useFavoriteToggle = (
                 action: {
                     label: 'Sign in',
                     onClick: () => {
-                        navigate({ to: '/login'})
+                        navigate({ to: '/login', search: { redirect: '' } })
                     }
                 },
                 duration: 4000

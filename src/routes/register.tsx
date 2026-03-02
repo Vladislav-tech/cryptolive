@@ -245,7 +245,7 @@ function RegisterPage() {
 
         <div className="text-center text-sm text-slate-400">
           Already have an account?{' '}
-          <Link to="/login" className="text-blue-400 hover:text-blue-300 font-medium">
+          <Link to="/login" search={{ redirect: '' }} className="text-blue-400 hover:text-blue-300 font-medium">
             Sign in
           </Link>
         </div>

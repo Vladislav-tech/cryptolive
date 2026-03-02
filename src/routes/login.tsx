@@ -1,12 +1,11 @@
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
+import { createFileRoute, Link, useNavigate, useSearch } from '@tanstack/react-router';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { useMutation } from '@tanstack/react-query'
-import api from '@/api/axiosInstance';
 
 const loginSchema = z.object({
   email: z.string().email('Please enter a valid email'),
@@ -16,12 +15,23 @@ const loginSchema = z.object({
 type LoginForm = z.infer<typeof loginSchema>;
 
 export const Route = createFileRoute('/login')({
+  validateSearch: (search) => ({
+    redirect: (search.redirect as string) || '',
+  }),
   component: LoginPage,
 });
 
 function LoginPage() {
-  const [showPassword, setShowPassword] = useState(false);
+  const { auth } = Route.useRouteContext()
+  const { redirect } = useSearch({ from: '/login' })
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
+
+  useEffect(() => {
+    if (redirect) {
+      toast.error('Please login to continue');
+    }
+  }, [redirect])
 
   const {
     register,
@@ -37,15 +47,16 @@ function LoginPage() {
 
   const loginMutation = useMutation({
     mutationFn: async (data: LoginForm) => {
-      const response = await api.post('/login', data);
+      const response = await auth.login(data);
       localStorage.setItem('token', response.data.accessToken);
-      
       return response.data;
     },
 
     onSuccess: () => {
-      toast.success('Welcome');
-      navigate({ to: '/profile'});
+      toast.success('Welcome back!');
+      setTimeout(() => {
+        navigate({ to: '/profile' });
+      }, 0);
     },
 
     onError: (err: any) => {
@@ -83,8 +94,8 @@ function LoginPage() {
                   ${errors.email
                     ? 'border-rose-500/60 animate-shake'
                     : dirtyFields.email && !errors.email
-                    ? 'border-emerald-500/60 ring-1 ring-emerald-500/30'
-                    : 'border-slate-700/60'}
+                      ? 'border-emerald-500/60 ring-1 ring-emerald-500/30'
+                      : 'border-slate-700/60'}
                   text-slate-100 placeholder-slate-500
                   focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/50
                   transition-all duration-200
@@ -114,8 +125,8 @@ function LoginPage() {
                   ${errors.password
                     ? 'border-rose-500/60 animate-shake'
                     : dirtyFields.password && !errors.password
-                    ? 'border-emerald-500/60 ring-1 ring-emerald-500/30'
-                    : 'border-slate-700/60'}
+                      ? 'border-emerald-500/60 ring-1 ring-emerald-500/30'
+                      : 'border-slate-700/60'}
                   text-slate-100 placeholder-slate-500
                   focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/50
                   transition-all duration-200
@@ -140,7 +151,7 @@ function LoginPage() {
 
           <button
             type="submit"
-              disabled={loginMutation.isPending}
+            disabled={loginMutation.isPending}
             className="
               w-full py-3 px-4
               bg-blue-600 hover:bg-blue-700

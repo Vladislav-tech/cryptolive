@@ -15,16 +15,16 @@ import { toast } from 'sonner';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getUserInfo } from '@/api/getUserInfoApi';
 import { capitalize } from '@/utils/capitalize';
-import { checkAuth, logout } from '@/api/authApi';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import type { UserInfo } from '@/api/getUserInfoApi';
 import { formatDate } from '@/utils/formatDate';
 
-export const Route = createFileRoute('/profile')({
+export const Route = createFileRoute('/_authenticated/profile')({
   component: ProfilePage,
 });
 
 function ProfilePage() {
+  const { auth } = Route.useRouteContext()
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [copied, setCopied] = useState(false);
@@ -37,14 +37,14 @@ function ProfilePage() {
 
   const logoutMutation = useMutation({
     mutationFn: async () => {
-      await logout();
+      await auth.logout();
     },
 
     onSuccess: () => {
       toast.success('You logout from account', {
         description: 'See you later!',
       });
-      navigate({ to: '/login' });
+      navigate({ to: '/login', search: { redirect: '' } });
       queryClient.clear();
     },
 
@@ -53,20 +53,6 @@ function ProfilePage() {
       console.error(error);
     },
   });
-
-  useEffect(() => {
-    let mounted = true;
-    (async () => {
-      const ok = await checkAuth();
-      if (!ok && mounted) {
-        navigate({ to: '/login' });
-        toast.error('You are not authenticated. Please login to access your profile.');
-      }
-    })();
-    return () => {
-      mounted = false;
-    };
-  }, []);
 
   const copyEmail = () => {
     if (userInfo?.email) {
