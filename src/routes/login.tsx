@@ -28,8 +28,23 @@ function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
+    
+    let toastText = '';
+
+    switch(redirect) {
+      case '/favorites':
+        toastText = 'Please login to access your favorites coins';
+        break;
+      case '/profile':
+        toastText = 'Please login to access your profile';
+        break;
+      default:
+        toastText = 'Please login to continue';
+        break;
+    }
+
     if (redirect) {
-      toast.error('Please login to continue');
+      toast.error(toastText);
     }
   }, [redirect])
 

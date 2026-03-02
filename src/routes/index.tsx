@@ -16,6 +16,7 @@ export const Route = createFileRoute('/')({
 })
 
 function App() {
+  const { auth } = Route.useRouteContext();
   const { cryptoData, isConnected, error } = useCryptoWebSocket();
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [sortBy, setSortBy] = useState<SortOption>('price');
@@ -28,7 +29,8 @@ function App() {
     select: (data) => data?.data?.favorites || [],
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
-    retry: 1
+    retry: 1,
+    enabled: auth.isAuthenticated
 
   });
 

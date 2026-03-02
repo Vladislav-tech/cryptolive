@@ -14,13 +14,34 @@ export const Route = createFileRoute('/favorites')({
 });
 
 function Favorites() {
+    const { auth } = Route.useRouteContext();
     const { data: favorites = [], } = useQuery({
         queryKey: FAVORITES_QUERY_KEY,
         queryFn: getFavorites,
         select: (data) => data?.data?.favorites ?? [],
         refetchOnMount: 'always',
         refetchOnWindowFocus: false,
+        enabled: auth.isAuthenticated,
     });
+
+    if (!auth.isAuthenticated) {
+        return (
+            <div className="min-h-[70vh] flex items-center justify-center">
+                <div className="text-center space-y-4">
+                    <Heart className="mx-auto w-12 h-12 text-rose-500" />
+                    <h1 className="text-3xl font-bold text-white">
+                        Please sign in
+                    </h1>
+                    <p className="text-slate-400">
+                        Log in to access your favorites list
+                    </p>
+                    <Link to="/login" search={{ redirect: '/favorites' }} className="text-blue-400 hover:text-blue-300 font-medium">
+                        Sign in
+                    </Link>
+                </div>
+            </div>
+        );
+    }
 
     const { cryptoData, isConnected, error } = useCryptoWebSocket(favorites);
 
@@ -29,7 +50,7 @@ function Favorites() {
 
     const sortedCryptoData = useMemo(() => {
         const favoritesSet = new Set(favorites.map(favorite => favorite.toLowerCase()));
-        const filtered = cryptoData.filter(crypto => 
+        const filtered = cryptoData.filter(crypto =>
             favoritesSet.has(crypto.symbol.toLowerCase())
         );
         return [...filtered].sort((a, b) =>

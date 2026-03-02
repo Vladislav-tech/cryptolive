@@ -23,7 +23,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (token) {
             checkAuth()
                 .then(isAuth => {
-                    console.log('checkAuth result:', isAuth);
                     setIsAuthenticated(isAuth);
                 })
                 .catch(() => localStorage.removeItem('token'))
