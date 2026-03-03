@@ -8,8 +8,8 @@ import { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getFavorites } from '@/api/favoritesApi';
 import { FAVORITES_QUERY_KEY } from '@/utils/queryKeys';
-import { SkeletonList } from '@/components/skeletons';
-import CryptoCardList from '@/components/CryptoCardList';
+import { SkeletonTable } from '@/components/skeletons';
+import {CryptoCardList} from '@/components/Crypto/';
 
 export const Route = createFileRoute('/')({
   component: App,
@@ -80,7 +80,7 @@ function App() {
         </div>
       )}
 
-      {isLoading ? <SkeletonList count={6} /> : <CryptoCardList cryptos={processedCryptos} favorites={favorites} />}
+      {isLoading ? <SkeletonTable count={6} /> : <CryptoCardList cryptos={processedCryptos} favorites={favorites} />}
 
     </div>
 

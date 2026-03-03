@@ -1,7 +1,7 @@
 import { getFavorites } from '@/api/favoritesApi';
 import { ConnectionStatus } from '@/components/ConnectionStatus';
-import CryptoCardList from '@/components/CryptoCardList';
-import { SkeletonList } from '@/components/skeletons';
+import {CryptoCardList} from '@/components/Crypto';
+import { SkeletonTable } from '@/components/skeletons';
 import { useCryptoWebSocket } from '@/hooks/useCryptoWebSocket';
 import { FAVORITES_QUERY_KEY } from '@/utils/queryKeys';
 import { useQuery } from '@tanstack/react-query';
@@ -122,7 +122,7 @@ function Favorites() {
 
             {hasFavorites && isLoading && (
                 <div className="text-center py-16">
-                    <SkeletonList count={6} />
+                    <SkeletonTable count={6} />
                 </div>
             )}
 
