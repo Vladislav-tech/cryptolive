@@ -15,6 +15,8 @@ import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CoinsIndexRouteImport } from './routes/coins/index'
+import { Route as CoinsCoinRouteImport } from './routes/coins/$coin'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 
 const RegisterRoute = RegisterRouteImport.update({
@@ -46,6 +48,16 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CoinsIndexRoute = CoinsIndexRouteImport.update({
+  id: '/coins/',
+  path: '/coins/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CoinsCoinRoute = CoinsCoinRouteImport.update({
+  id: '/coins/$coin',
+  path: '/coins/$coin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
@@ -59,6 +71,8 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/coins/$coin': typeof CoinsCoinRoute
+  '/coins/': typeof CoinsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -67,6 +81,8 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/coins/$coin': typeof CoinsCoinRoute
+  '/coins': typeof CoinsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -77,6 +93,8 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
+  '/coins/$coin': typeof CoinsCoinRoute
+  '/coins/': typeof CoinsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -87,6 +105,8 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/profile'
+    | '/coins/$coin'
+    | '/coins/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -95,6 +115,8 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/profile'
+    | '/coins/$coin'
+    | '/coins'
   id:
     | '__root__'
     | '/'
@@ -104,6 +126,8 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/_authenticated/profile'
+    | '/coins/$coin'
+    | '/coins/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -113,6 +137,8 @@ export interface RootRouteChildren {
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   LoginRoute: typeof LoginRoute
   RegisterRoute: typeof RegisterRoute
+  CoinsCoinRoute: typeof CoinsCoinRoute
+  CoinsIndexRoute: typeof CoinsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -159,6 +185,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/coins/': {
+      id: '/coins/'
+      path: '/coins'
+      fullPath: '/coins/'
+      preLoaderRoute: typeof CoinsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/coins/$coin': {
+      id: '/coins/$coin'
+      path: '/coins/$coin'
+      fullPath: '/coins/$coin'
+      preLoaderRoute: typeof CoinsCoinRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/profile': {
       id: '/_authenticated/profile'
       path: '/profile'
@@ -188,6 +228,8 @@ const rootRouteChildren: RootRouteChildren = {
   ForgotPasswordRoute: ForgotPasswordRoute,
   LoginRoute: LoginRoute,
   RegisterRoute: RegisterRoute,
+  CoinsCoinRoute: CoinsCoinRoute,
+  CoinsIndexRoute: CoinsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -1,10 +1,12 @@
 import { TrendingUp, TrendingDown, Heart, LoaderCircle } from 'lucide-react';
 import type { CryptoData } from '@/hooks/useCryptoWebSocket';
 import { memo, useCallback } from 'react';
-import { useNavigate } from '@tanstack/react-router';
+import { Link, useNavigate } from '@tanstack/react-router';
 import { useFavoriteToggle } from '@/hooks/useFavoriteToggle';
 import { usePriceHistoryQuery } from '@/hooks/usePriceHistory';
 import { MiniChart } from '@/components/MiniChart';
+import { getCoinGeckoId } from '@/utils/mapCoinName';
+import { capitalize } from '@/utils/capitalize';
 
 interface CryptoTableProps {
   cryptos: CryptoData[];
@@ -68,6 +70,7 @@ const CryptoTableRow = ({ crypto, isFav }: CryptoTableRowProps) => {
         </button>
       </td>
       <td className="px-3 sticky left-12 z-30 bg-slate-900 group-hover:bg-slate-800/30 min-w-35 shadow-[4px_0_8px_-2px_rgba(0,0,0,0.3)]">
+      <Link to="/coins/$coin" params={{ coin: getCoinGeckoId(crypto.symbol)}}>
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-lg shrink-0 overflow-hidden">
             <img
@@ -81,10 +84,11 @@ const CryptoTableRow = ({ crypto, isFav }: CryptoTableRowProps) => {
             />
           </div>
           <div className="shrink-0">
-            <p className="font-semibold text-white whitespace-nowrap">{symbolName}</p>
+            <p className="font-semibold text-white whitespace-nowrap">{capitalize(getCoinGeckoId(symbolName))}</p>
             <p className="text-xs text-slate-400 font-medium whitespace-nowrap">{crypto.symbol}</p>
           </div>
         </div>
+        </Link>
       </td>
       <td className="px-3 min-w-30">
         <p className="font-mono text-white font-bold whitespace-nowrap">${formatNumber(crypto.price)}</p>

@@ -1,31 +1,48 @@
 type LocaleType = Intl.LocalesArgument;
 
 interface IFormatDate {
-    dateString: string;
+    dateToFormat: string | number;
     local?: LocaleType;
-    shortType?: boolean;
+    shortType?: DateType;
 }
 
-export const formatDate = ({ dateString, local = 'en-US', shortType = true }: IFormatDate): string => {
-    if (!dateString) return '';
+type DateType = 'very-short' | 'short' | 'detailed'
 
-    const date = new Date(dateString);
+export const formatDate = ({ dateToFormat, local = 'en-US', shortType = 'short' }: IFormatDate): string => {
+    if (!dateToFormat) return '';
 
-    const options: Intl.DateTimeFormatOptions = shortType
-        ? {
-            day: '2-digit',
-            month: 'long',
-            year: 'numeric'
-        }
-        : {
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-            hour12: false
-        };
+    const date = new Date(dateToFormat);
+
+    const options: Intl.DateTimeFormatOptions = {};
+
+    switch(shortType) {
+        case 'very-short':
+            options.day = '2-digit';
+            options.month = '2-digit';
+            options.year = 'numeric';
+            break;
+            
+        case 'short':
+            options.day = '2-digit';
+            options.month = 'long';
+            options.year = 'numeric';
+            break;
+            
+        case 'detailed':
+            options.day = '2-digit';
+            options.month = '2-digit';
+            options.year = 'numeric';
+            options.hour = '2-digit';
+            options.minute = '2-digit';
+            options.second = '2-digit';
+            options.hour12 = false;
+            break;
+            
+        default:
+            options.day = '2-digit';
+            options.month = 'long';
+            options.year = 'numeric';
+    }
 
     return new Intl.DateTimeFormat(local, options).format(date);
 }
