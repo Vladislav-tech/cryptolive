@@ -98,10 +98,10 @@ export interface HistoricalData {
     total_volumes: [number, number][];
 }
 
-const COINGECKO_API = 'https://api.coingecko.com/api/v3/coins';
+const COINGECKO_API = 'https://api.coingecko.com/api/v3';
 
 export const fetchCryptoDetail = async (id: string): Promise<CryptoDetailReturn> => {
-    const response = await axios.get<CryptoDetail>(`${COINGECKO_API}/${id}?localization=false&tickers=false`);
+    const response = await axios.get<CryptoDetail>(`${COINGECKO_API}/coins/${id}?localization=false&tickers=false`);
 
     if (response.status !== 200) {
         throw new Error('Failed to fetch cryptocurrency details');
@@ -138,10 +138,27 @@ export const fetchCryptoDetail = async (id: string): Promise<CryptoDetailReturn>
 }
 
 export const fetchHistoricalData = async (id: string) => {
-    const response = await axios.get<HistoricalData>(`${COINGECKO_API}/${id}/market_chart?vs_currency=usd&days=7&x-cg-demo-api-key=CG-TVtEax2mNunagnYggGCWys8v`);
+    const response = await axios.get<HistoricalData>(`${COINGECKO_API}/coins/${id}/market_chart?vs_currency=usd&days=7&x-cg-demo-api-key=CG-TVtEax2mNunagnYggGCWys8v`);
 
     if (response.status !== 200) {
         throw new Error('Failed to fetch cryptocurrency details');
+    }
+
+    return response.data;
+}
+
+export interface PriceResponse {
+  [cryptoId: string]: {
+    [currencyCode: string]: number;
+    last_updated_at: number;
+  }
+}
+
+export const fetchSimplePrice = async (id: string, currency: string) => {
+    const response = await axios.get<PriceResponse>(`${COINGECKO_API}/simple/price?ids=${id}&vs_currencies=${currency}&include_last_updated_at=true&x-cg-demo-api-key=CG-TVtEax2mNunagnYggGCWys8v`)
+
+    if (response.status !== 200) {
+        throw new Error('Failed to fetch cryptocurrency price');
     }
 
     return response.data;

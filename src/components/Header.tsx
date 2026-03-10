@@ -1,4 +1,4 @@
-import { Sparkles, TrendingUp, Star, Menu, X, User } from "lucide-react";
+import { Sparkles, TrendingUp, Star, Menu, X, User, ArrowRightLeft } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import React from 'react';
@@ -23,7 +23,6 @@ const HeaderComponent = () => {
               <div className="flex items-center gap-2">
                 <h1 className="text-3xl md:text-4xl font-bold bg-linear-to-r from-white to-blue-100 bg-clip-text text-transparent">
                   <Link to="/">CryptoLive</Link>
-
                 </h1>
                 <div className="relative">
                   <Sparkles className="w-6 h-6 text-yellow-400 animate-spin-slow" />
@@ -50,13 +49,26 @@ const HeaderComponent = () => {
               <span className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-0 h-0.5 bg-linear-to-r from-blue-400 to-purple-400 group-hover:w-4/5 transition-all duration-300"></span>
             </Link>
 
+            <Link
+              to="/convert"
+              className="group relative flex items-center gap-2 px-4 py-2 rounded-xl text-gray-200 hover:text-white transition-all"
+            >
+              <div className="absolute inset-0 bg-linear-to-r from-indigo-500/10 to-purple-500/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <ArrowRightLeft className="w-5 h-5" />
+              <span className="font-semibold text-lg relative z-10">Convert</span>
+              <span className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-0 h-0.5 bg-linear-to-r from-blue-400 to-purple-400 group-hover:w-4/5 transition-all duration-300"></span>
+            </Link>
 
             <Link
               to="/profile"
               className="group relative flex items-center gap-2 px-4 py-2 rounded-xl text-gray-200 hover:text-white transition-all"
             >
+              <div className="absolute inset-0 bg-linear-to-r from-indigo-500/10 to-purple-500/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
               <User className="w-5 h-5" />
-              <span>Profile</span>
+              <span className="font-semibold text-lg relative z-10">Profile</span>
+              <span className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-0 h-0.5 bg-linear-to-r from-blue-400 to-purple-400 group-hover:w-4/5 transition-all duration-300"></span>
+
             </Link>
 
           </nav>
