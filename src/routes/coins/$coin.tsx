@@ -3,7 +3,7 @@ import type { CoinDataType, RawCoinDataType } from '@/types';
 import { formatDate } from '@/utils/formatDate';
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
-import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
+import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, Brush } from 'recharts';
 import {
   ArrowUpRight,
   ArrowDownRight,
@@ -33,6 +33,15 @@ import { getFavorites } from '@/api/favoritesApi';
 export const Route = createFileRoute('/coins/$coin')({
   component: RouteComponent,
 })
+
+const formatPrice = (price: number) => {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: price < 1 ? 6 : 2,
+    maximumFractionDigits: price < 1 ? 6 : 2,
+  }).format(price);
+};
 
 function RouteComponent() {
   const { coin } = Route.useParams()
@@ -69,7 +78,7 @@ function RouteComponent() {
 
     data.forEach((item) => {
       const formattedCoin: CoinDataType = {
-        date: formatDate({ dateToFormat: item[0], shortType: 'very-short' }),
+        date: formatDate({ dateToFormat: item[0], shortType: 'detailed' }),
         price: +item[1].toFixed(2),
       };
 
@@ -93,14 +102,7 @@ function RouteComponent() {
   const priceChange = coinData?.price_change_percentage_7d?.toFixed(2) || '0.00';
   const isPositive = Number(priceChange) >= 0;
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: price < 1 ? 6 : 2,
-      maximumFractionDigits: price < 1 ? 6 : 2,
-    }).format(price);
-  };
+
 
   const formatCompactNumber = (num: number) => {
     if (!num) return '—';
@@ -156,7 +158,6 @@ function RouteComponent() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      {/* Header */}
       <div className="mb-8">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
           <div className="flex items-center gap-3 sm:gap-4">
@@ -168,11 +169,25 @@ function RouteComponent() {
             <div className="min-w-0">
               <h1 className="text-2xl sm:text-4xl font-bold text-text-primary truncate">
                 {coinData?.name}
+
               </h1>
+              
               <div className="flex items-center gap-2 mt-1 flex-wrap">
                 <span className="text-slate-400 text-xs sm:text-sm uppercase font-semibold">
                   {coinData?.symbol}
                 </span>
+                {coinData?.market_cap_rank && (
+                  <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border border-yellow-500/30">
+                    <div className="flex items-center justify-center w-4 h-4 rounded-full bg-gradient-to-br from-yellow-500 to-orange-500 shadow-lg shadow-yellow-500/30">
+                      <span className="text-[10px] font-bold text-white">
+                        {coinData.market_cap_rank}
+                      </span>
+                    </div>
+                    <span className="text-xs font-semibold text-yellow-400 whitespace-nowrap">
+                      Market Cap Rank
+                    </span>
+                  </div>
+                )}
                 {coinData?.categories && coinData.categories.length > 0 && (
                   <div className="flex gap-1 flex-wrap">
                     {coinData.categories.slice(0, 3).map((cat, i) => (
@@ -188,7 +203,6 @@ function RouteComponent() {
               </div>
             </div>
           </div>
-
           <div className="flex items-center gap-2 sm:gap-3">
             <button
               onClick={() => toggleFavorite()}
@@ -230,10 +244,13 @@ function RouteComponent() {
         </div>
 
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-          <div className="min-w-0">
-            <span className="text-3xl sm:text-5xl font-bold text-text-primary tracking-tight wrap-break-word">
+          <div className="min-w-0 space-y-2 md:w-96">
+            <span className="text-3xl sm:text-5xl font-bold text-text-primary tracking-tight break-all">
               {formatPrice(currentPrice)}
             </span>
+            <div className="max-w-md mt-3.5">
+              <ATHProgress current={currentPrice} ath={coinData?.ath} atl={coinData?.atl} />
+            </div>
           </div>
           <div className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-full text-sm sm:text-base font-semibold whitespace-nowrap ${isPositive
             ? 'bg-accent-green/10 text-accent-green border border-accent-green/20'
@@ -242,6 +259,7 @@ function RouteComponent() {
             {isPositive ? <ArrowUpRight className="w-5 h-5 sm:w-5 sm:h-5" /> : <ArrowDownRight className="w-5 h-5 sm:w-5 sm:h-5" />}
             {priceChange}% (7d)
           </div>
+
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mt-6">
@@ -287,11 +305,11 @@ function RouteComponent() {
             </span>
           </div>
         </div>
-        <div className="h-75 sm:h-100 w-full">
+        <div className="h-80 sm:h-[28rem] w-full">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart
               data={formattedData}
-              margin={{ top: 10, right: 10, left: 0, bottom: 10 }}
+              margin={{ top: 10, right: 10, left: 0, bottom: 50 }}
             >
               <defs>
                 <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
@@ -318,7 +336,7 @@ function RouteComponent() {
                 axisLine={{ stroke: '#334155' }}
                 tickLine={{ stroke: '#334155' }}
                 minTickGap={15}
-                interval="preserveStartEnd"
+                interval="equidistantPreserveStart"
               />
               <YAxis
                 dataKey="price"
@@ -343,6 +361,15 @@ function RouteComponent() {
                 }}
                 labelStyle={{ color: '#94a3b8', marginBottom: '8px' }}
                 formatter={(value: number | undefined) => [formatPrice(value || 0), 'Price']}
+                labelFormatter={(label) => {
+                  return new Date(label).toLocaleString('en-US', {
+                    month: 'short',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false,
+                  });
+                }}
               />
               <Area
                 type="monotone"
@@ -354,6 +381,32 @@ function RouteComponent() {
                 activeDot={{ fill: isPositive ? '#34d399' : '#f87171', r: 5 }}
                 animationDuration={1000}
               />
+              <Brush
+                dataKey="date"
+                height={40}
+                stroke={isPositive ? '#34d399' : '#f87171'}
+                fill="#1e293b"
+                tickFormatter={(date) => {
+                  return new Date(date).toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric'
+                  });
+                }}
+                travellerWidth={10}
+                padding={{ top: 10, bottom: 10, left: 20, right: 20 }}
+                className="cursor-grab active:cursor-grabbing"
+              >
+                <AreaChart>
+                  <Area
+                    type="monotone"
+                    dataKey="price"
+                    stroke={isPositive ? '#34d399' : '#f87171'}
+                    fill={isPositive ? '#34d399' : '#f87171'}
+                    fillOpacity={0.2}
+                  />
+                </AreaChart>
+              </Brush>
+
             </AreaChart>
           </ResponsiveContainer>
         </div>
@@ -406,7 +459,7 @@ function RouteComponent() {
               icon={<Calendar className="w-6 h-6 text-cyan-400" />}
               label="Launch Date"
               value={coinData?.genesis_date || '—'}
-            />``
+            />
           </div>
         </div>
 
@@ -611,6 +664,43 @@ function InfoRow({ icon, label, value }: { icon: React.ReactNode; label: string;
       <div className="flex-1 min-w-0">
         <div className="text-xs text-slate-400 mb-0.5">{label}</div>
         <div className="text-sm font-semibold text-text-primary truncate">{value}</div>
+      </div>
+    </div>
+  );
+}
+
+function ATHProgress({ current, ath, atl }: { current: number; ath?: number; atl?: number }) {
+  if (!ath || !atl || !current) return null;
+
+  const percentFromAth = ((ath - current) / ath * 100);
+  const rangePercent = ath !== atl ? Math.min(100, Math.max(0, ((current - atl) / (ath - atl) * 100))) : 50;
+  const isNearAth = percentFromAth < 20;
+  const isNearAtl = percentFromAth > 80;
+
+  return (
+    <div className="space-y-1.5">
+      <div className="flex items-center justify-between text-xs">
+        <span className="text-slate-400">
+          <span className="text-rose-400 font-medium">ATL</span> {formatPrice(atl)}
+        </span>
+        <span className={`font-medium transition-colors ${isNearAth ? 'text-emerald-400' : isNearAtl ? 'text-rose-400' : 'text-slate-300'
+          }`}>
+          {percentFromAth >= 0 ? `${percentFromAth.toFixed(1)}% below ATH` : `${Math.abs(percentFromAth).toFixed(1)}% above ATH`}
+        </span>
+        <span className="text-slate-400">
+          {formatPrice(ath)} <span className="text-emerald-400 font-medium">ATH</span>
+        </span>
+      </div>
+      <div className="relative h-2.5 bg-slate-700/50 rounded-full overflow-hidden">
+        <div
+          className="absolute h-full bg-gradient-to-r from-rose-500/80 via-yellow-500/80 to-emerald-500/80"
+          style={{ width: '100%' }}
+        />
+        <div
+          className={`absolute h-full w-1.5 bg-white rounded-full shadow-lg transform -translate-x-1/2 transition-all ${isNearAth ? 'shadow-emerald-500/50' : isNearAtl ? 'shadow-rose-500/50' : ''
+            }`}
+          style={{ left: `${rangePercent}%` }}
+        />
       </div>
     </div>
   );

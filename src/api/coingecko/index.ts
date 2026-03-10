@@ -54,6 +54,7 @@ export interface CryptoDetail {
     genesis_date?: string;
     hashing_algorithm?: string;
     categories?: string[];
+    market_cap_rank: string;
 }
 
 export interface CryptoDetailReturn {
@@ -88,6 +89,7 @@ export interface CryptoDetailReturn {
     genesis_date?: string;
     hashing_algorithm?: string;
     categories?: string[];
+    market_cap_rank: string;
 }
 
 export interface HistoricalData {
@@ -131,11 +133,12 @@ export const fetchCryptoDetail = async (id: string): Promise<CryptoDetailReturn>
         categories: data.categories,
         description: data.description?.en ?? '',
         image: data.image.large,
+        market_cap_rank: data.market_cap_rank,
     }
 }
 
 export const fetchHistoricalData = async (id: string) => {
-    const response = await axios.get<HistoricalData>(`${COINGECKO_API}/${id}/market_chart?vs_currency=usd&days=7&interval=daily`);
+    const response = await axios.get<HistoricalData>(`${COINGECKO_API}/${id}/market_chart?vs_currency=usd&days=7&x-cg-demo-api-key=CG-TVtEax2mNunagnYggGCWys8v`);
 
     if (response.status !== 200) {
         throw new Error('Failed to fetch cryptocurrency details');
