@@ -7,7 +7,6 @@ import {
   Calendar,
   Copy,
   Clock,
-  TrendingUp,
   Check,
   ArrowRight,
 } from 'lucide-react';
@@ -74,10 +73,10 @@ function ProfilePage() {
     return (
       <div className="max-w-4xl mx-auto py-10 px-4">
         <div className="animate-pulse space-y-6">
-          <div className="h-48 bg-slate-800/50 rounded-3xl" />
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <div className="h-36 bg-slate-800/50 rounded-2xl" />
-            <div className="h-36 bg-slate-800/50 rounded-2xl" />
+          <div className="h-40 bg-slate-800/50 rounded-xl" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="h-32 bg-slate-800/50 rounded-xl" />
+            <div className="h-32 bg-slate-800/50 rounded-xl" />
           </div>
         </div>
       </div>
@@ -85,47 +84,41 @@ function ProfilePage() {
   }
 
   return (
-    <div className="relative min-h-screen py-10 px-4 sm:px-6 lg:px-8">
-      <div className="relative max-w-4xl mx-auto space-y-8">
-        <div
-          className="
-            backdrop-blur-xl bg-slate-900/60 border border-slate-700/50
-            rounded-3xl shadow-2xl shadow-black/40 p-8 sm:p-10
-            animate-fade-in-up
-          "
-        >
-          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-8">
+    <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6">
+      <div className="space-y-6">
+        {/* Profile Card */}
+        <div className="bg-slate-800/50 backdrop-blur border border-slate-700/50 rounded-xl p-6">
+          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
             <div className="relative">
               <div
                 className="
-                  relative w-28 h-28 sm:w-36 sm:h-36 rounded-full
-                  bg-slate-700
+                  relative w-24 h-24 rounded-full
+                  bg-gradient-to-br from-blue-600 to-indigo-600
                   flex items-center justify-center shrink-0
-                  ring-4 ring-slate-600/50
                 "
               >
-                <span className="text-5xl sm:text-6xl font-bold text-white">
+                <span className="text-3xl font-bold text-white">
                   {capitalize(userInfo?.name?.[0] || '?')}
                 </span>
               </div>
-              <div className="absolute -bottom-1 -right-1 bg-emerald-500 p-2 rounded-full ring-4 ring-slate-900">
-                <Check className="w-4 h-4 text-white" />
+              <div className="absolute -bottom-0.5 -right-0.5 bg-emerald-500 p-1.5 rounded-full ring-2 ring-slate-800">
+                <Check className="w-3.5 h-3.5 text-white" />
               </div>
             </div>
 
             <div className="flex-1 text-center sm:text-left">
-              <h1 className="text-3xl sm:text-4xl font-bold text-white mb-3">
+              <h1 className="text-2xl font-bold text-white mb-2">
                 {capitalize(userInfo?.name || 'User')}
               </h1>
 
               <div className="mt-3 flex items-center justify-center sm:justify-start gap-2">
                 <div
                   className="
-                    flex items-center gap-2 px-4 py-2
-                    bg-slate-800/60 backdrop-blur-sm border border-slate-700/50
-                    rounded-xl text-slate-300
-                    hover:bg-slate-800/80 hover:border-slate-600/60
-                    transition-all duration-200 cursor-pointer
+                    flex items-center gap-2 px-3.5 py-2
+                    bg-slate-700/50 border border-slate-600/50
+                    rounded-lg text-slate-300
+                    hover:bg-slate-700/70 hover:border-slate-500/50
+                    transition-colors cursor-pointer
                   "
                   onClick={copyEmail}
                   role="button"
@@ -139,45 +132,41 @@ function ProfilePage() {
                   />
                 </div>
                 {copied && (
-                  <span className="text-emerald-400 text-sm font-medium animate-fade-in">
+                  <span className="text-emerald-400 text-sm font-medium">
                     Copied!
                   </span>
                 )}
               </div>
 
-              <div className="mt-5 flex flex-wrap gap-4 justify-center sm:justify-start">
+              <div className="mt-4 flex flex-wrap gap-3 justify-center sm:justify-start">
                 <div
                   className="
-                    flex items-center gap-2 px-4 py-2.5
-                    bg-slate-800/40 backdrop-blur-sm border border-slate-700/50
-                    rounded-xl text-sm
+                    flex items-center gap-2.5 px-3.5 py-2
+                    bg-slate-700/30 border border-slate-600/30
+                    rounded-lg text-sm
                   "
                 >
-                  <div className="p-1.5 bg-blue-500/10 rounded-lg">
-                    <Calendar className="w-4 h-4 text-blue-400" />
-                  </div>
+                  <Calendar className="w-4 h-4 text-blue-400" />
                   <div>
                     <p className="text-slate-500 text-xs font-medium">Joined</p>
                     <p className="text-slate-200 font-semibold">
-                      {formatDate({ dateString: userInfo?.registrationDate || '', shortType: true })}
+                      {formatDate({ dateToFormat: userInfo?.registrationDate || '', shortType: 'short' })}
                     </p>
                   </div>
                 </div>
 
                 <div
                   className="
-                    flex items-center gap-2 px-4 py-2.5
-                    bg-slate-800/40 backdrop-blur-sm border border-slate-700/50
-                    rounded-xl text-sm
+                    flex items-center gap-2.5 px-3.5 py-2
+                    bg-slate-700/30 border border-slate-600/30
+                    rounded-lg text-sm
                   "
                 >
-                  <div className="p-1.5 bg-purple-500/10 rounded-lg">
-                    <Clock className="w-4 h-4 text-purple-400" />
-                  </div>
+                  <Clock className="w-4 h-4 text-purple-400" />
                   <div>
                     <p className="text-slate-500 text-xs font-medium">Last active</p>
                     <p className="text-slate-200 font-semibold">
-                      {formatDate({ dateString: userInfo?.lastSignInDate || '', shortType: false })}
+                      {formatDate({ dateToFormat: userInfo?.lastSignInDate || '', shortType: 'detailed' })}
                     </p>
                   </div>
                 </div>
@@ -186,57 +175,53 @@ function ProfilePage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <Link
             to="/favorites"
             className="
               group
-              bg-slate-900/50 backdrop-blur-xl border border-slate-700/50
-              rounded-2xl p-6
-              hover:bg-slate-800/60 hover:border-indigo-500/50 hover:shadow-xl hover:shadow-indigo-500/20
-              transition-all duration-300
-              animate-fade-in-up
+              bg-slate-800/50 backdrop-blur border border-slate-700/50
+              rounded-xl p-5
+              hover:bg-slate-700/50 hover:border-indigo-500/50
+              transition-all duration-200
             "
-            style={{ animationDelay: '0.1s' }}
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
-                <div className="p-3 rounded-xl bg-indigo-500/10 group-hover:scale-110 transition-transform duration-300">
-                  <Star className="w-6 h-6 text-indigo-400" />
+                <div className="p-2.5 rounded-lg bg-indigo-500/10 group-hover:scale-105 transition-transform">
+                  <Star className="w-5 h-5 text-indigo-400" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-white">Favorites</h3>
-                  <p className="text-2xl font-bold text-indigo-400 mt-1">
+                  <h3 className="text-base font-semibold text-white">Favorites</h3>
+                  <p className="text-xl font-bold text-indigo-400 mt-0.5">
                     {userInfo?.favorites ?? 0}
                   </p>
-                  <p className="text-slate-500 text-sm">tracked coins</p>
+                  <p className="text-slate-500 text-xs">tracked coins</p>
                 </div>
               </div>
-              <ArrowRight className="w-5 h-5 text-slate-500 group-hover:text-indigo-400 group-hover:translate-x-1 transition-all duration-300" />
+              <ArrowRight className="w-5 h-5 text-slate-500 group-hover:text-indigo-400 group-hover:translate-x-1 transition-all" />
             </div>
           </Link>
 
           <div
             className="
-              bg-slate-900/50 backdrop-blur-xl border border-slate-700/50
-              rounded-2xl p-6
-              opacity-60 hover:opacity-80
-              transition-all duration-300
-              animate-fade-in-up
+              bg-slate-800/50 backdrop-blur border border-slate-700/50
+              rounded-xl p-5
+              opacity-70
             "
-            style={{ animationDelay: '0.15s' }}
           >
             <div className="flex items-center justify-between cursor-not-allowed">
               <div className="flex items-center gap-4">
-                <div className="p-3 rounded-xl bg-slate-700/30">
-                  <ShieldCheck className="w-6 h-6 text-slate-500" />
+                <div className="p-2.5 rounded-lg bg-slate-700/30">
+                  <ShieldCheck className="w-5 h-5 text-slate-500" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-white">Security</h3>
+                  <h3 className="text-base font-semibold text-white">Security</h3>
                   <p className="text-slate-500 text-sm">Coming soon</p>
                 </div>
               </div>
-              <span className="px-3 py-1 bg-slate-700/50 rounded-full text-xs text-slate-400 font-medium">
+              <span className="px-2.5 py-1 bg-slate-700/50 rounded-full text-xs text-slate-400 font-medium">
                 Soon
               </span>
             </div>
@@ -244,50 +229,42 @@ function ProfilePage() {
 
           <div
             className="
-              group
-              bg-slate-900/50 backdrop-blur-xl border border-slate-700/50
-              rounded-2xl p-6
-              hover:bg-slate-800/60 hover:border-emerald-500/50 hover:shadow-xl hover:shadow-emerald-500/20
-              transition-all duration-300
-              animate-fade-in-up
+              bg-slate-800/50 backdrop-blur border border-slate-700/50
+              rounded-xl p-5
             "
-            style={{ animationDelay: '0.2s' }}
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
-                <div className="p-3 rounded-xl bg-emerald-500/10 group-hover:scale-110 transition-transform duration-300">
-                  <TrendingUp className="w-6 h-6 text-emerald-400" />
+                <div className="p-2.5 rounded-lg bg-emerald-500/10">
+                  <Check className="w-5 h-5 text-emerald-400" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-white">Status</h3>
+                  <h3 className="text-base font-semibold text-white">Status</h3>
                   <p className="text-emerald-400 font-semibold text-sm">Active</p>
                 </div>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="relative flex h-3 w-3">
+                <span className="relative flex h-2.5 w-2.5">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
                 </span>
               </div>
             </div>
           </div>
         </div>
 
+        {/* Logout Button */}
         <button
           onClick={handleLogout}
           disabled={logoutMutation.isPending || isLeaving}
           className="
-            group w-full flex items-center justify-center gap-3 py-4 px-6
-            bg-rose-600/80 hover:bg-rose-600
-            text-white font-semibold rounded-xl
-            transition-all duration-200
-            shadow-lg shadow-rose-500/20 hover:shadow-xl hover:shadow-rose-500/30
-            hover:scale-[1.01] active:scale-[0.99]
-            focus:outline-none focus:ring-2 focus:ring-rose-500/40
-            disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100
-            animate-fade-in-up cursor-pointer
+            group w-full flex items-center justify-center gap-2.5 py-3 px-6
+            bg-rose-600 hover:bg-rose-500
+            text-white font-medium rounded-lg
+            transition-colors duration-200
+            disabled:opacity-50 disabled:cursor-not-allowed
+            cursor-pointer
           "
-          style={{ animationDelay: '0.25s' }}
         >
           {logoutMutation.isPending ? (
             <>

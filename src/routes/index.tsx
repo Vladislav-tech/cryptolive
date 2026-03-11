@@ -49,7 +49,7 @@ function App() {
     bg-glass-bg backdrop-blur-md
     border border-glass-border
     rounded-2xl shadow-2xl shadow-black/30
-    p-6 space-y-6
+    space-y-6
     transition-all duration-300
   "
       >
@@ -73,14 +73,14 @@ function App() {
               setSearchTerm('');
               setFilterBy('all');
             }}
-            className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
+            className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors cursor-pointer"
           >
             Clear Filters
           </button>
         </div>
       )}
 
-      {isLoading ? <SkeletonTable count={6} /> : <CryptoCardList cryptos={processedCryptos} favorites={favorites} />}
+      {isLoading ? <SkeletonTable count={9} /> : <CryptoCardList cryptos={processedCryptos} favorites={favorites} />}
 
     </div>
 

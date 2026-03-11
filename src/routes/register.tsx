@@ -84,7 +84,7 @@ function RegisterPage() {
   };
 
   return (
-    <div className="flex items-center justify-center bg-slate-950 py-12 px-4 sm:px-6 lg:px-8 mt-26">
+    <div className="flex items-center justify-center bg-slate-950 px-4 sm:px-6 lg:px-8 mt-20">
       <div className="max-w-md w-full space-y-8 bg-slate-800/50 backdrop-blur-lg border border-slate-700/60 rounded-xl p-8 shadow-lg">
         <div className="text-center">
           <h2 className="text-3xl font-bold text-white">Create Account</h2>

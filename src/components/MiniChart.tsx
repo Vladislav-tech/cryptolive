@@ -19,7 +19,7 @@ export const MiniChart = ({ data, isPositive }: MiniChartProps) => {
     }
 
     return (
-        <div className="h-20 w-full">
+        <div className="h-12 w-full md:h-15">
             <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={data}>
                     <YAxis hide domain={['dataMin', 'dataMax']} />

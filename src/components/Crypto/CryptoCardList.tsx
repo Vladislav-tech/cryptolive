@@ -7,6 +7,7 @@ interface CryptoCardListProps {
 }
 
 export const CryptoCardList = ({ cryptos, favorites }: CryptoCardListProps) => {
+    if (cryptos.length === 0) return;
     return (
         <CryptoTable cryptos={cryptos}  favorites={favorites || []} />
     )

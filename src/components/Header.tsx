@@ -1,114 +1,90 @@
-import { Sparkles, TrendingUp, Star, Menu, X, User, ArrowRightLeft } from "lucide-react";
-import { Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { TrendingUp, Star, User, ArrowRightLeft, Home } from "lucide-react";
+import { Link, useLocation } from "@tanstack/react-router";
 import React from 'react';
 
+const navLinks = [
+  { to: "/" as const, label: "Home", icon: Home },
+  { to: "/favorites" as const, label: "Favorites", icon: Star },
+  { to: "/convert" as const, label: "Convert", icon: ArrowRightLeft },
+  { to: "/profile" as const, label: "Profile", icon: User },
+] as const;
+
 const HeaderComponent = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const location = useLocation();
 
   return (
-    <header className="sticky top-0 z-50 mb-8 backdrop-blur-lg bg-linear-to-r">
-      <div className="container mx-auto px-4 py-1">
-        <div className="flex items-center justify-between">
+    <>
+      {/* Desktop Header */}
+      <header className="sticky top-0 z-50 backdrop-blur-md">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between h-16">
 
-          <div className="flex items-center gap-4">
-            <div className="relative">
-              <div className="absolute inset-0 bg-linear-to-br from-blue-500 via-indigo-500 to-purple-600 rounded-2xl blur-lg opacity-70 animate-pulse"></div>
-              <div className="relative bg-linear-to-br from-blue-600 to-indigo-600 p-3 rounded-2xl shadow-xl ring-2 ring-white/20 hover:scale-105 transition-transform duration-300">
-                <TrendingUp className="w-8 h-8 text-white animate-pulse" />
-              </div>
-            </div>
-
-            <div className="flex flex-col">
-              <div className="flex items-center gap-2">
-                <h1 className="text-3xl md:text-4xl font-bold bg-linear-to-r from-white to-blue-100 bg-clip-text text-transparent">
-                  <Link to="/">CryptoLive</Link>
-                </h1>
-                <div className="relative">
-                  <Sparkles className="w-6 h-6 text-yellow-400 animate-spin-slow" />
-                  <div className="absolute inset-0 animate-ping bg-yellow-400 rounded-full opacity-20"></div>
+            {/* Logo Section */}
+            <Link to="/" className="flex items-center gap-2.5 group">
+              <div className="relative">
+                <div className="absolute inset-0 bg-blue-500/20 rounded-lg blur-sm group-hover:bg-blue-500/30 transition-colors"></div>
+                <div className="relative bg-blue-600 p-2 rounded-lg">
+                  <TrendingUp className="w-5 h-5 text-white" />
                 </div>
               </div>
-              <p className="text-gray-300 text-sm md:text-base font-medium tracking-wide">
-                Real-time cryptocurrency tracker
-                <span className="inline-block w-2 h-2 bg-green-400 rounded-full ml-2 animate-pulse"></span>
-              </p>
-            </div>
+              <div className="flex flex-col">
+                <h1 className="text-lg font-bold text-white tracking-tight">
+                  CryptoLive
+                </h1>
+                <p className="text-[10px] text-slate-400 uppercase tracking-wider font-medium">
+                  Live Tracker
+                </p>
+              </div>
+            </Link>
+
+            {/* Desktop Navigation */}
+            <nav className="hidden md:flex items-center gap-1.5">
+              {navLinks.map(({ to, label, icon: Icon }) => {
+                const isActive = location.pathname === to;
+                return (
+                  <Link
+                    key={to}
+                    to={to}
+                    className={`relative flex items-center gap-2 px-3.5 py-2 rounded-lg transition-all duration-200 ${
+                      isActive
+                        ? "text-white bg-slate-800"
+                        : "text-slate-400 hover:text-white hover:bg-slate-800/50"
+                    }`}
+                  >
+                    <Icon className={`w-4 h-4 ${isActive ? "text-blue-400" : ""}`} />
+                    <span className="text-sm font-medium">{label}</span>
+                    {isActive && (
+                      <span className="absolute -bottom-px left-1/2 -translate-x-1/2 w-8 h-px bg-blue-500 rounded-full"></span>
+                    )}
+                  </Link>
+                );
+              })}
+            </nav>
           </div>
-
-          <nav className="hidden md:flex items-center gap-8">
-            <Link
-              to="/favorites"
-              className="group relative flex items-center gap-2 px-6 py-3 rounded-xl text-gray-200 hover:text-white transition-all duration-300"
-            >
-              <div className="absolute inset-0 bg-linear-to-r from-indigo-500/10 to-purple-500/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              <Star className="w-5 h-5 text-yellow-400 group-hover:rotate-12 transition-transform duration-300" />
-              <span className="font-semibold text-lg relative z-10">
-                Favorites
-              </span>
-              <span className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-0 h-0.5 bg-linear-to-r from-blue-400 to-purple-400 group-hover:w-4/5 transition-all duration-300"></span>
-            </Link>
-
-            <Link
-              to="/convert"
-              className="group relative flex items-center gap-2 px-4 py-2 rounded-xl text-gray-200 hover:text-white transition-all"
-            >
-              <div className="absolute inset-0 bg-linear-to-r from-indigo-500/10 to-purple-500/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              <ArrowRightLeft className="w-5 h-5" />
-              <span className="font-semibold text-lg relative z-10">Convert</span>
-              <span className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-0 h-0.5 bg-linear-to-r from-blue-400 to-purple-400 group-hover:w-4/5 transition-all duration-300"></span>
-            </Link>
-
-            <Link
-              to="/profile"
-              className="group relative flex items-center gap-2 px-4 py-2 rounded-xl text-gray-200 hover:text-white transition-all"
-            >
-              <div className="absolute inset-0 bg-linear-to-r from-indigo-500/10 to-purple-500/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
-              <User className="w-5 h-5" />
-              <span className="font-semibold text-lg relative z-10">Profile</span>
-              <span className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-0 h-0.5 bg-linear-to-r from-blue-400 to-purple-400 group-hover:w-4/5 transition-all duration-300"></span>
-
-            </Link>
-
-          </nav>
-
-          <button
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors duration-200"
-          >
-            {isMenuOpen ? (
-              <X className="w-6 h-6 text-white" />
-            ) : (
-              <Menu className="w-6 h-6 text-white" />
-            )}
-          </button>
         </div>
+      </header>
 
-        {isMenuOpen && (
-          <div className="md:hidden mt-4 pt-4 border-t border-white/10 animate-fadeIn">
-            <div className="flex flex-col gap-2">
+      {/* Mobile Bottom Navigation */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-slate-900/95 backdrop-blur-md border-t border-slate-800 safe-area-inset-bottom">
+        <div className="flex items-center justify-around">
+          {navLinks.map(({ to, label, icon: Icon }) => {
+            const isActive = location.pathname === to;
+            return (
               <Link
-                to="/favorites"
-                className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors duration-200"
-                onClick={() => setIsMenuOpen(false)}
+                key={to}
+                to={to}
+                className={`flex flex-col items-center justify-center flex-1 py-2.5 transition-colors ${
+                  isActive ? "text-blue-400" : "text-slate-400"
+                }`}
               >
-                <Star className="w-5 h-5 text-yellow-400" />
-                <span className="font-semibold text-white">Favorites</span>
+                <Icon className="w-5 h-5" />
+                <span className="text-[10px] mt-0.5 font-medium">{label}</span>
               </Link>
-              <Link
-                to="/profile"
-                className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors duration-200"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                <User className="w-5 h-5 text-white" />
-                <span className="font-semibold text-white">Profile</span>
-              </Link>
-            </div>
-          </div>
-        )}
-      </div>
-    </header>
+            );
+          })}
+        </div>
+      </nav>
+    </>
   );
 };
 
